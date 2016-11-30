@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template, request, Response, g, stream_with_context
 from utils import acces_foncier, extract_cp
 from rights_decorator import rights_required
@@ -16,12 +18,18 @@ def load_user():
     g.org = request.headers.get('sec-org')
     # get LDAP org object, extract description field with list of areas:
     g.cities = extract_cp(app.config, g.org)
-    # store user roles
-    g.roles = []
+    # store user roles & available millésimes
+    prefix = app.config['ROLE_PREFIX']
+    roles = []
+    years = []
     rolesHeader = request.headers.get('sec-roles')
     if rolesHeader is not None:
-        g.roles = rolesHeader.split(';')
-
+        roles = rolesHeader.split(';')
+        for role in roles:
+            if (role.startswith(prefix)):
+                years.append(role[len(prefix):])
+    g.years = years
+    g.roles = roles
 
 @app.route('/', methods=['GET'])
 def index():

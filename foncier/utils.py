@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import ldap
 
 def acces_foncier(roles):
