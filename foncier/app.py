@@ -18,7 +18,7 @@ def load_user():
     # if user is memberOf cn=psc,ou=orgs,dc=georchestra,dc=org then sec-org is "psc"
     g.org = request.headers.get('sec-org')
     # get LDAP org object, extract description field with list of areas:
-    g.cities = extract_cp(app.config, g.org)
+    g.cities = extract_cp(g.org)
     # store user roles & available millésimes
     prefix = app.config['ROLE_PREFIX']
     roles = []
