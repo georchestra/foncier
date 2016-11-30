@@ -2,6 +2,7 @@
 
 class Config(object):
     # General config
+    DEBUG = False
     ROLE_PREFIX = 'ROLE_FONCIER_'
     # LDAP-related keys:
     LDAP_BINDDN = 'cn=admin,dc=georchestra,dc=org'

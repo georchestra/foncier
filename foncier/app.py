@@ -13,6 +13,7 @@ def load_user():
     g.username = request.headers.get('sec-username')
     g.firstname = request.headers.get('sec-firstname')
     g.lastname = request.headers.get('sec-lastname')
+    g.email = request.headers.get('sec-email')
     # store org
     # if user is memberOf cn=psc,ou=orgs,dc=georchestra,dc=org then sec-org is "psc"
     g.org = request.headers.get('sec-org')
@@ -41,14 +42,7 @@ def index():
 @app.route('/submit', methods=['POST'])
 @rights_required
 def submit():
-    return 'submit'
-
-
-@app.route('/thanks', methods=['GET'])
-@rights_required
-def thanks():
-    uuid = 124
-    return render_template('thanks.html', id=uuid)
+    return render_template('thanks.html')
 
 
 @app.route('/retrieve/<uuid>', methods=['GET'])
@@ -62,4 +56,4 @@ def retrieve(uuid):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=app.config['DEBUG'])
