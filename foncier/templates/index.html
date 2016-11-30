@@ -1,5 +1,36 @@
 <!doctype html>
-<title>Foncier PPIGE</title>
-<h1>Foncier PPIGE</h1>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Foncier PPIGE</title>
+    </head>
 
-<p>Bonjour {{ g.username }} avec {{ ','.join(g.roles) }} et cities = {{ ','.join(g.cities) }}</p>
+    <body>
+        <h1>Foncier PPIGE</h1>
+
+        <p>Bonjour {{ g.firstname }} {{ g.lastname }}, vous avez les rôles {{ ', '.join(g.roles) }}</p>
+
+        <form action="/submit" method="POST">
+            <fieldset>
+                <legend>Paramètres de l'extraction</legend>
+                <b>Millésime</b> :<br>
+                <input type="radio" name="year" value="2009"> 2009
+                <input type="radio" name="year" value="2011"> 2011
+                <input type="radio" name="year" value="2014" checked> 2014
+                <br><br>
+                <b>Projection</b> :<br>
+                <input type="radio" name="proj" value="2154" checked> Lambert 93
+                <input type="radio" name="proj" value="4326"> WGS 84
+                <br><br>
+                <b>Format</b> :<br>
+                <input type="radio" name="format" value="shp" checked> Shapefile
+                <input type="radio" name="format" value="mifmid"> MapInfo
+                <input type="radio" name="format" value="postgis"> PostGIS
+                <br><br>
+                <input type="submit" value="Commander">
+            </fieldset>
+        </form>
+
+        <p>Vous avez accès aux fichiers fonciers des villes de code INSEE : {{ ', '.join(g.cities) }}</p>
+    </body>
+</html>

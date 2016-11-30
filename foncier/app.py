@@ -9,6 +9,8 @@ app.config.from_envvar('FONCIER_SETTINGS', silent=True)
 def load_user():
     # store username during request treatment
     g.username = request.headers.get('sec-username')
+    g.firstname = request.headers.get('sec-firstname')
+    g.lastname = request.headers.get('sec-lastname')
     # store org
     # if user is memberOf cn=psc,ou=orgs,dc=georchestra,dc=org then sec-org is "psc"
     g.org = request.headers.get('sec-org')
