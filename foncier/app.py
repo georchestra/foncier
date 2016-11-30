@@ -23,10 +23,9 @@ def load_user():
 @app.route('/', methods=['GET'])
 def index():
     if acces_foncier(g.roles) == True:
-        return render_template('index.html', name=g.username, roles=','.join(g.roles), cities = ','.join(g.cities))
+        return render_template('index.html')
     else:
         return render_template('sorry.html')
-
 
 @app.route('/submit', methods=['POST'])
 @rights_required

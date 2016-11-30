@@ -2,4 +2,4 @@
 <title>Foncier PPIGE</title>
 <h1>Foncier PPIGE</h1>
 
-<p>Bonjour {{ name }} avec {{ roles }} et CP = {{cities}}</p>
+<p>Bonjour {{ g.username }} avec {{ ','.join(g.roles) }} et cities = {{ ','.join(g.cities) }}</p>
