@@ -9,19 +9,11 @@ def acces_foncier(roles):
     return ok
 
 
-def extract_cp(org):
-    # OpenLDAP
-    LDAP_URI    = 'ldap://localhost:10389'
-    LDAP_BINDDN = 'cn=admin,dc=georchestra,dc=org'
-    LDAP_PASSWD = 'secret'
-    LDAP_ORGS_BASEDN = "ou=orgs,dc=georchestra,dc=org"
-    LDAP_SEARCH_FILTER = "(&(cn="+org+")(objectClass=groupOfMembers))"
-
-    # Connection to the LDAP
-    cnx = ldap.initialize(LDAP_URI)
+def extract_cp(cfg, org):
+    cnx = ldap.initialize(cfg['LDAP_URI'])
     try:
         cnx.protocol_version = ldap.VERSION3
-        cnx.simple_bind_s(LDAP_BINDDN, LDAP_PASSWD)
+        cnx.simple_bind_s(cfg['LDAP_BINDDN'], cfg['LDAP_PASSWD'])
     except ldap.LDAPError, e:
         if type(e.message) == dict and e.message.has_key('desc'):
             print e.message['desc']
@@ -30,7 +22,7 @@ def extract_cp(org):
         sys.exit(0)
     
     try:
-        results = cnx.search_s(LDAP_ORGS_BASEDN, ldap.SCOPE_ONELEVEL, LDAP_SEARCH_FILTER, ["businessCategory","description"])
+        results = cnx.search_s(cfg['LDAP_ORGS_BASEDN'], ldap.SCOPE_ONELEVEL, cfg['LDAP_SEARCH_FILTER'], ["businessCategory","description"])
         if len(results) == 0:
             print "User has no org - this is an issue !"
             sys.exit(0)
