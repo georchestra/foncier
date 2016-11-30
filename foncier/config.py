@@ -3,7 +3,7 @@ class Config(object):
     LDAP_BINDDN = 'cn=admin,dc=georchestra,dc=org'
     LDAP_PASSWD = 'secret'
     LDAP_ORGS_BASEDN = "ou=orgs,dc=georchestra,dc=org"
-    LDAP_SEARCH_FILTER = "(&(cn=cbnbl)(objectClass=groupOfMembers))"
+    LDAP_SEARCH_FILTER = "(&(cn={0})(objectClass=groupOfMembers))"
 
 class ProductionConfig(Config):
     DEBUG = False

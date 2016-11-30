@@ -22,7 +22,7 @@ def extract_cp(cfg, org):
         sys.exit(0)
     
     try:
-        results = cnx.search_s(cfg['LDAP_ORGS_BASEDN'], ldap.SCOPE_ONELEVEL, cfg['LDAP_SEARCH_FILTER'], ["businessCategory","description"])
+        results = cnx.search_s(cfg['LDAP_ORGS_BASEDN'], ldap.SCOPE_ONELEVEL, cfg['LDAP_SEARCH_FILTER'].format(org), ["businessCategory","description"])
         if len(results) == 0:
             print "User has no org - this is an issue !"
             sys.exit(0)
