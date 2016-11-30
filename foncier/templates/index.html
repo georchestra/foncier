@@ -14,9 +14,9 @@
             <fieldset>
                 <legend>Paramètres de l'extraction</legend>
                 <b>Millésime</b> :<br>
-                <input type="radio" name="year" value="2009"> 2009
-                <input type="radio" name="year" value="2011"> 2011
-                <input type="radio" name="year" value="2014" checked> 2014
+                {% for year in g.years %}
+                <input type="radio" name="year" value="{{ year }}" {{ 'checked' if year == g.years[0] }}> {{ year }}
+                {% endfor %}
                 <br><br>
                 <b>Projection</b> :<br>
                 <input type="radio" name="proj" value="2154" checked> Lambert 93
