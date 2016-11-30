@@ -42,7 +42,8 @@ def index():
 @app.route('/submit', methods=['POST'])
 @rights_required
 def submit():
-    return render_template('thanks.html')
+    values = request.form
+    return render_template('thanks.html', values = values)
 
 
 @app.route('/retrieve/<uuid>', methods=['GET'])
