@@ -1,0 +1,17 @@
+# inspired by https://github.com/msgre/uwsgi_logging
+foncier:
+  build: .
+  environment:
+    - FONCIER_DEBUG=True
+  volumes:
+    - foncier_staticfiles:/static
+    - foncier_extracts:/extracts
+
+nginx:
+  image: nginx
+  ports:
+    - "8080:80"
+  volumes:
+    - ./resources/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  links:
+    - foncier
