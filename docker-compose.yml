@@ -2,10 +2,12 @@
 foncier:
   build: .
   environment:
-    - FONCIER_DEBUG=True
+    - FONCIER_SETTINGS=/config.py
   volumes:
     - foncier_staticfiles:/static
     - foncier_extracts:/extracts
+  links:
+    - ldap
 
 nginx:
   image: nginx
@@ -15,3 +17,14 @@ nginx:
     - ./resources/nginx.conf:/etc/nginx/conf.d/default.conf:ro
   links:
     - foncier
+
+ldap:
+  image: georchestra/ldap
+  environment:
+      - SLAPD_ORGANISATION=georchestra
+      - SLAPD_DOMAIN=georchestra.org
+      - SLAPD_PASSWORD=secret
+      - SLAPD_ADDITIONAL_MODULES=groupofmembers
+  volumes:
+    - ldap_data:/var/lib/ldap
+    - ldap_config:/etc/ldap

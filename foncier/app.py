@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, Response, g, stream_with_cont
 from utils import acces_foncier, extract_cp
 from rights_decorator import rights_required
 app = Flask(__name__)
-app.config.from_object('config.DevelopmentConfig')
+app.config.from_object('config.BaseConfig')
 app.config.from_envvar('FONCIER_SETTINGS', silent=True)
 
 @app.before_request
