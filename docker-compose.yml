@@ -3,6 +3,11 @@ foncier:
   build: .
   environment:
     - FONCIER_SETTINGS=/config.py
+    - UWSGI_ENABLE_THREADS=1
+    - UWSGI_SINGLE_INTERPRETER=1
+    - UWSGI_PROCESSES=3
+    - UWSGI_THREADS=2
+    - UWSGI_MASTER=1
   volumes:
     - foncier_staticfiles:/static
     - foncier_extracts:/extracts

@@ -19,5 +19,10 @@ EXPOSE 5000
 
 RUN chmod +x /docker-entrypoint.sh /docker-entrypoint.d/*
 
+RUN groupadd --gid 999 www && \
+    useradd -r -ms /bin/bash --uid 999 --gid 999 www
+
+USER www
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["uwsgi", "--socket", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app"]
+CMD ["uwsgi", "--socket", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app", "--uid", "www"]
