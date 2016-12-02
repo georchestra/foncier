@@ -32,6 +32,8 @@ Puis lançons l'application avec
 export FLASK_APP=foncier/app.py
 flask run
 ```
+Puis RDV sur [http://localhost:5000/](http://localhost:5000/)
+
 
 Notez pour finir qu'il est possible de surcharger la [configuration par défaut](foncier/config.py) par d'autres valeurs (un exemple [ici](resources/config.py)) via:
 ```
