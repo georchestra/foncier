@@ -32,7 +32,7 @@ def extract_cp(org):
             return []
 
         (dn, entry) = results[0]
-        return ';'.join(entry['description']).split(';')
+        return ','.join(entry['description']).split(',')
 
     except ldap.LDAPError, e:
         if type(e.message) == dict and e.message.has_key('desc'):
