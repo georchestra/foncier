@@ -41,3 +41,11 @@ export FLASK_APP=foncier/app.py
 export FONCIER_SETTINGS=/path/to/config.py
 flask run
 ```
+
+## Utilisation
+
+Si la requête entrante est munie d'un header `sec-roles` composé d'une suite de chaînes de caractères du type `ROLE_FONCIER_XXXX`, séparées par des points virgules (eg: `sec-roles = ROLE_FONCIER_2009;ROLE_FONCIER_2011`) alors la page d'accueil présente un formulaire d'extraction permettant de choisir un millésime à extraire (à choisir parmi les années composant `sec-roles`).
+
+Si de plus, la requête est munie d'un header `sec-org` égalant le `cn` d'un organisme du LDAP (ex: `sec-org = psc`), alors l'extraction est autorisée sur l'ensemble des communes de codes INSEE renseignés dans le champ `description` du dit organisme.
+
+Dans le cas contraire, la réponse de l'application est une page indiquant les modalités d'accès aux fichiers fonciers.
