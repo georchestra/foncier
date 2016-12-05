@@ -2,17 +2,19 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <meta http-equiv="refresh" content="10; URL=/">
+        <!--meta http-equiv="refresh" content="2; URL=/retrieve/{{ uuid }}"-->
         <title>Foncier PPIGE</title>
     </head>
 
     <body>
         <h1>Foncier PPIGE</h1>
 
-        <p>Votre commande du millésime <b>{{ values.get('year') }}</b> au format <b>{{ values.get('format').upper() }} / EPSG:{{ values.get('proj') }}</b> a été enregistrée et sera traitée dans les meilleurs délais.</p>
+        <p>Votre commande du millésime <b>{{ values.get('year') }}</b> au format <b>{{ values.get('format').upper() }} / EPSG:{{ values.get('proj') }}</b> a été enregistrée sous la référence {{ uuid }} et sera traitée dans les meilleurs délais.</p>
         <p>Elle sera envoyée à l'adresse <b>{{ g.email }}</b></p>
-
+        
         <p><br></p>
-        <p>Vous allez être redirigé automatiquement vers l'accueil d'ici quelques instants...</p>
+
+        <p>Adresse de suivi : <a href="/retrieve/{{ uuid }}">/retrieve/{{ uuid }}</a></p>
+
     </body>
 </html>

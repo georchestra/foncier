@@ -3,9 +3,16 @@
 from flask import Flask, render_template, request, Response, g, stream_with_context
 from utils import acces_foncier, extract_cp
 from rights_decorator import rights_required
+from tasks import taskmanager
+from celery.result import AsyncResult
+import celery.states as states
+
+# create the app:
 app = Flask(__name__)
+# configure it:
 app.config.from_object('config.BaseConfig')
 app.config.from_envvar('FONCIER_SETTINGS', silent=True)
+
 
 @app.before_request
 def load_user():
@@ -32,6 +39,7 @@ def load_user():
     g.years = years
     g.roles = roles
 
+
 @app.route('/', methods=['GET'])
 def index():
     if acces_foncier(g.roles) == True:
@@ -39,21 +47,36 @@ def index():
     else:
         return render_template('sorry.html')
 
+
 @app.route('/submit', methods=['POST'])
 @rights_required
 def submit():
     values = request.form
-    return render_template('thanks.html', values = values)
+    task = taskmanager.send_task('extraction.do', args=[ \
+        values.get('year'), \
+        values.get('format'), \
+        values.get('proj'), \
+        g.email, \
+        g.cities], kwargs={})
+    return render_template('thanks.html', values = values, uuid = task.id)
 
 
-@app.route('/retrieve/<uuid>', methods=['GET'])
+@app.route('/retrieve/<string:uuid>', methods=['GET'])
 @rights_required
 def retrieve(uuid):
+    res = taskmanager.AsyncResult(uuid)
+
     def generate():
         yield 'Hello '
         yield uuid
         yield ' !'
-    return Response(stream_with_context(generate()))
+
+    # TODO: handle erroneous uuids
+    if res.state==states.PENDING:
+        return render_template('retrieve.html', uuid = uuid)
+    else:
+        return str(res.result)
+        #~ return Response(stream_with_context(generate()))
 
 
 if __name__ == '__main__':

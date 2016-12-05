@@ -1,3 +1,4 @@
-Flask
-celery
-python-ldap
+Flask==0.11.1
+python-ldap==2.4.28
+celery==4.0.0
+redis==2.10.5
