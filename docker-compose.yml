@@ -55,3 +55,5 @@ ldap:
 # Message broker
 redis:
   image: redis:3.2
+  volumes:
+    - redis_data:/data
