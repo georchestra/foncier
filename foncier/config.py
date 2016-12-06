@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 class BaseConfig(object):
     # General config
     DEBUG = True
@@ -9,5 +8,5 @@ class BaseConfig(object):
     LDAP_BINDDN = 'cn=admin,dc=georchestra,dc=org'
     LDAP_PASSWD = 'secret'
     LDAP_ORGS_BASEDN = 'ou=orgs,dc=georchestra,dc=org'
-    LDAP_SEARCH_FILTER = '(&(cn={0})(objectClass=groupOfMembers))'
+    LDAP_SEARCH_FILTER = '(&(cn=%s)(objectClass=groupOfMembers))'
 

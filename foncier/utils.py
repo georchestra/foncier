@@ -1,44 +1,34 @@
 # -*- coding: utf-8 -*-
 
-import ldap
+from ldap3 import Connection, LEVEL
 from flask import current_app
 
+
 def acces_foncier(roles):
-    ok = False
     for role in roles:
         if role.startswith(current_app.config['ROLE_PREFIX']):
-            ok = True
-            break
-    return ok
+            return True
+    return False
 
 
 def extract_cp(org):
-    cnx = ldap.initialize(current_app.config['LDAP_URI'])
-    try:
-        cnx.protocol_version = ldap.VERSION3
-        cnx.simple_bind_s(current_app.config['LDAP_BINDDN'], current_app.config['LDAP_PASSWD'])
-        print 'Successfully connected to LDAP'
-    except ldap.LDAPError, e:
-        if type(e.message) == dict and e.message.has_key('desc'):
-            print 'Error binding to LDAP with dn: {0}'.format(current_app.config['LDAP_BINDDN'])
-        else:
-            print e
-        return []
-    
-    try:
-        results = cnx.search_s(current_app.config['LDAP_ORGS_BASEDN'], ldap.SCOPE_ONELEVEL, current_app.config['LDAP_SEARCH_FILTER'].format(org), ["businessCategory","description"])
-        if len(results) == 0:
-            print 'Error querying LDAP for org {0}: entry does not exist'.format(org)
-            return []
+    cnx = Connection(current_app.config['LDAP_URI'],
+                    current_app.config['LDAP_BINDDN'],
+                    current_app.config['LDAP_PASSWD'],
+                    auto_bind=True)
+    print('Successfully connected to LDAP')
 
-        (dn, entry) = results[0]
-        return ','.join(entry['description']).split(',')
+    cnx.search(search_base=current_app.config['LDAP_ORGS_BASEDN'],
+               search_filter=current_app.config['LDAP_SEARCH_FILTER'] % org,
+               search_scope=LEVEL,
+               attributes=["businessCategory","description"])
 
-    except ldap.LDAPError, e:
-        if type(e.message) == dict and e.message.has_key('desc'):
-            print 'Error querying LDAP for org {0}: {1}'.format(org, e.message['desc'])
-        else:
-            print e
-        return []
+    for entry in cnx.entries:
+        res = ','.join(entry['description']).split(',')
+        cnx.unbind()
+        return res
 
-    cnx.unbind_s()
+    if not cnx.closed:
+        cnx.unbind()
+    print('Error querying LDAP for org %s: entry does not exist' % org)
+    return []

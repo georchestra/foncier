@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.4
 
 MAINTAINER François Van Der Biest "francois.vanderbiest@camptocamp.com"
 
@@ -8,7 +8,7 @@ WORKDIR "/app"
 
 RUN apt-get update && \
     apt-get install -y \
-        python-dev \
+        python3-all-dev \
         libldap2-dev \
         libsasl2-dev \
     && \
