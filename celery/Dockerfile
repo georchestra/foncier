@@ -12,4 +12,4 @@ WORKDIR /celery
 RUN pip install -r requirements.txt
 
 # run the worker
-ENTRYPOINT ['celery', '-A', 'extractions', 'worker', '--loglevel=info']
+ENTRYPOINT ["celery", "-A", "extractions", "worker", "--loglevel=info"]
