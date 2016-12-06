@@ -2,6 +2,8 @@ FROM python:2.7
 
 MAINTAINER François Van Der Biest "francois.vanderbiest@camptocamp.com"
 
+ENV FONCIER_SETTINGS /config.py
+
 WORKDIR "/app"
 
 RUN apt-get update && \

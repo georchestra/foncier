@@ -2,7 +2,6 @@
 app:
   build: .
   environment:
-    - FONCIER_SETTINGS=/config.py
     - UWSGI_ENABLE_THREADS=1
     - UWSGI_SINGLE_INTERPRETER=1
     - UWSGI_PROCESSES=3
@@ -10,9 +9,6 @@ app:
     - UWSGI_MASTER=1
     - CELERY_BROKER_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
-  volumes:
-    - foncier_staticfiles:/static
-    - foncier_extracts:/extracts
   links:
     - ldap
     - redis
@@ -24,6 +20,9 @@ worker:
   environment:
     - CELERY_BROKER_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  volumes:
+    - foncier_staticfiles:/static
+    - foncier_extracts:/extracts
   links:
     - redis
 
