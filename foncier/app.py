@@ -28,21 +28,14 @@ def load_user():
     g.cities = extract_cp(g.org)
     # store user roles & available millésimes
     prefix = app.config['ROLE_PREFIX']
-    roles = []
-    years = []
     rolesHeader = request.headers.get('sec-roles')
-    if rolesHeader is not None:
-        roles = rolesHeader.split(';')
-        for role in roles:
-            if (role.startswith(prefix)):
-                years.append(role[len(prefix):])
-    g.years = years
-    g.roles = roles
+    g.roles = rolesHeader.split(';') if rolesHeader is not None else []
+    g.years = [r[len(prefix):] for r in g.roles if r.startswith(prefix)]
 
 
 @app.route('/', methods=['GET'])
 def index():
-    if acces_foncier(g.roles) == True:
+    if acces_foncier(g.roles):
         return render_template('index.html')
     else:
         return render_template('sorry.html')
@@ -52,13 +45,13 @@ def index():
 @rights_required
 def submit():
     values = request.form
-    task = taskmanager.send_task('extraction.do', args=[ \
-        values.get('year'), \
-        values.get('format'), \
-        values.get('proj'), \
-        g.email, \
+    task = taskmanager.send_task('extraction.do', args=[
+        values.get('year'),
+        values.get('format'),
+        values.get('proj'),
+        g.email,
         g.cities], kwargs={})
-    return render_template('thanks.html', values = values, uuid = task.id)
+    return render_template('thanks.html', values=values, uuid=task.id)
 
 
 @app.route('/retrieve/<string:uuid>', methods=['GET'])
@@ -72,11 +65,11 @@ def retrieve(uuid):
         yield ' !'
 
     # TODO: handle erroneous uuids
-    if res.state==states.PENDING:
-        return render_template('retrieve.html', uuid = uuid)
+    if res.state == states.PENDING:
+        return render_template('retrieve.html', uuid=uuid)
     else:
         return str(res.result)
-        #~ return Response(stream_with_context(generate()))
+        # return Response(stream_with_context(generate()))
 
 
 if __name__ == '__main__':

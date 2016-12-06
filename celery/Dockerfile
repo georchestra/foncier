@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.4
 
 MAINTAINER François Van Der Biest "francois.vanderbiest@camptocamp.com"
 
