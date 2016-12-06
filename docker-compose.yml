@@ -49,6 +49,8 @@ ldap:
   volumes:
     - ldap_data:/var/lib/ldap
     - ldap_config:/etc/ldap
+  ports:
+    - "3899:389"
 
 
 # Message broker
@@ -56,3 +58,14 @@ redis:
   image: redis:3.2
   volumes:
     - redis_data:/data
+
+database:
+  image: camptocamp/postgis:9.5
+  volumes:
+    - foncier_pg_data:/var/lib/postgresql/data
+  ports:
+    - "54322:5432"
+  environment:
+    POSTGRES_DB: geoserver
+    POSTGRES_PASSWORD: geoserver
+    POSTGRES_USER: geoserver
