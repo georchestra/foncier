@@ -4,11 +4,14 @@ import os
 import time
 import tempfile
 import shutil
+from zipfile import ZipFile
+
 from celery import Celery
 from distutils.dir_util import copy_tree
 import psycopg2
 from subprocess import Popen, PIPE
-from os import path, remove
+from os import remove, listdir
+from os.path import isfile, join
 
 env=os.environ
 CELERY_BROKER_URL = env.get('CELERY_BROKER_URL','redis://localhost:6379'),
@@ -22,7 +25,6 @@ PG_CONNECT_STRING = env.get("PG_CONNECT_STRING")
 taskmanager = Celery('extractions',
                      broker=CELERY_BROKER_URL,
                      backend=CELERY_RESULT_BACKEND)
-
 
 
 def run_command(args):
@@ -92,11 +94,11 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
     be added
     :return: None
     """
-    with open(path.join(output_dir, "foncier_%s.sql"  % year), 'wb') as f:
+    with open(join(output_dir, "foncier_%s.sql"  % year), 'wb') as f:
         f.write(("CREATE SCHEMA foncier_%s;\n" % year).encode())
 
         for table in get_all_tables(conn, year):
-            table_output_file = path.join(output_dir, "export_table_%s.sql" % table)
+            table_output_file = join(output_dir, "export_table_%s.sql" % table)
             args = ["ogr2ogr",
                     "-a_srs", "EPSG:%s" % proj,
                     "-t_srs", "EPSG:%s" % proj,
@@ -104,11 +106,12 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
                     "PG:%s schemas=foncier_%s" % (PG_CONNECT_STRING, year),
                     table,
                     "-lco", "SCHEMA=foncier_%s" % year,
-                    "-lco", "SRID=4326",
+                    "-lco", "SRID=%s" % proj,
                     "-lco", "CREATE_SCHEMA=off",
                     "-lco", "DROP_TABLE=off"]
             run_command(args)
 
+            # append result to the main SQL file
             with open(table_output_file, 'rb') as table_file:
                 f.write(table_file.read())
             remove(table_output_file)
@@ -117,7 +120,9 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
 @taskmanager.task(name='extraction.do')
 def do(year, format, proj, email, cities):
 
-    tmpdir = tempfile.mkdtemp(dir = FONCIER_EXTRACTS_DIR, prefix = 'foncier_{0}_{1}_{2}_{3}-'.format(year, format, proj, do.request.id))
+    extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, do.request.id)
+
+    tmpdir = tempfile.mkdtemp(dir = FONCIER_EXTRACTS_DIR, prefix = extraction_id)
     print('Created temp dir %s' % tmpdir)
 
     if (FONCIER_STATIC_DIR is not None):
@@ -126,28 +131,25 @@ def do(year, format, proj, email, cities):
         except IOError as e:
             print('IOError copying %s to %s' % (FONCIER_STATIC_DIR, tmpdir))
 
-    # connect to DB
-    conn = psycopg2.connect(PG_CONNECT_STRING)
-
-    # TODO sanitize input 
+    # TODO sanitize input
 
     # launch extraction
-    print("Format : %s" % format)
-    if format == "shp" :
-        export_schema_to_shapefile_or_mapfile(year, proj, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
-    elif format == "mifmid" :
-        export_schema_to_shapefile_or_mapfile(year, proj, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
-    elif format == "postgis" :
-        export_schema_to_sql(year, proj, tmpdir, conn, PG_CONNECT_STRING)
-    else:
-        raise Exception("Invalid format : %s" % format)
+    with psycopg2.connect(PG_CONNECT_STRING) as conn:
+        if format == "shp" :
+            export_schema_to_shapefile_or_mapfile(year, proj, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
+        elif format == "mifmid" :
+            export_schema_to_shapefile_or_mapfile(year, proj, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
+        elif format == "postgis" :
+            export_schema_to_sql(year, proj, tmpdir, conn, PG_CONNECT_STRING)
+        else:
+            raise Exception("Invalid format : %s" % format)
 
-    # close DB connection
-    conn.close()
-
-    # zip file:
+    # create ZIP archive
     try:
-        name = shutil.make_archive(tmpdir, 'tar')
+        zip_name = join(FONCIER_EXTRACTS_DIR, "%s.zip" % extraction_id)
+        with ZipFile(zip_name, 'w') as myzip:
+            for file in [f for f in listdir(tmpdir) if isfile(join(tmpdir, f))]:
+                myzip.write(join(tmpdir, file), arcname=join(extraction_id, file))
     except IOError as e:
         print('IOError while zipping %s' % tmpdir)
 
@@ -157,5 +159,5 @@ def do(year, format, proj, email, cities):
 
     # return zip file
     time.sleep(10)
-    return 'done with %s ! We should now send an email to %s with a link to %s' % (cities, email, name)
+    return 'done with %s ! We should now send an email to %s with a link to %s' % (cities, email, zip_name)
 
