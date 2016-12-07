@@ -20,11 +20,13 @@ worker:
   environment:
     - CELERY_BROKER_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
   volumes:
     - foncier_staticfiles:/static
     - foncier_extracts:/extracts
   links:
     - redis
+    - database
 
 
 # Proxy
