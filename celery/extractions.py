@@ -49,7 +49,7 @@ def get_all_tables(conn, year):
     """
     List tables in schema foncier_<year> where year is the second argument
     :param conn: a psycopg connection instance
-    :param year: numerix year to append to 'foncier_' to build schema name
+    :param year: numeric year to append to 'foncier_' to build schema name
     :return: array of table name
     """
     cur = conn.cursor()
@@ -59,7 +59,7 @@ def get_all_tables(conn, year):
     return res
 
 
-def export_schema_to_shapefile_or_mapfile(year, proj, output_dir, format, conn, pg_connect_string):
+def export_schema_to_shapefile_or_mapinfo(year, proj, output_dir, format, conn, pg_connect_string):
     """
     Extract all table in schema foncier_<year> where 'year' is the first argument and generates files according to
     'format' in 'output_dir' folder.
@@ -77,7 +77,7 @@ def export_schema_to_shapefile_or_mapfile(year, proj, output_dir, format, conn, 
                 "-a_srs", "EPSG:%s" % proj,
                 "-t_srs", "EPSG:%s" % proj,
                 "-f", format, output_dir,
-                "PG:%s schemas=foncier_%s" % (PG_CONNECT_STRING, year),
+                "PG:%s schemas=foncier_%s" % (pg_connect_string, year),
                 table]
         run_command(args)
 
@@ -90,11 +90,11 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
     :param proj: output projection
     :param output_dir: folder where files will be writen
     :param conn: a psycopg connection instance
-    :param pg_connect_string: a string that contains option to connect to database with ogr2ogr. 'schema' option will
+    :param pg_connect_string: a string that contains option to connect to database with ogr2ogr. 'schemas' option will
     be added
     :return: None
     """
-    with open(join(output_dir, "foncier_%s.sql"  % year), 'wb') as f:
+    with open(join(output_dir, "foncier_%s.sql" % year), 'wb') as f:
         f.write(("CREATE SCHEMA foncier_%s;\n" % year).encode())
 
         for table in get_all_tables(conn, year):
@@ -103,7 +103,7 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
                     "-a_srs", "EPSG:%s" % proj,
                     "-t_srs", "EPSG:%s" % proj,
                     "-f", "PGDump", table_output_file,
-                    "PG:%s schemas=foncier_%s" % (PG_CONNECT_STRING, year),
+                    "PG:%s schemas=foncier_%s" % (pg_connect_string, year),
                     table,
                     "-lco", "SCHEMA=foncier_%s" % year,
                     "-lco", "SRID=%s" % proj,
@@ -120,9 +120,9 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
 @taskmanager.task(name='extraction.do')
 def do(year, format, proj, email, cities):
 
-    extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, do.request.id)
+    extraction_id = 'foncier_{0}{1}{2}_{3}'.format(year, format, proj, do.request.id)
 
-    tmpdir = tempfile.mkdtemp(dir = FONCIER_EXTRACTS_DIR, prefix = extraction_id)
+    tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     print('Created temp dir %s' % tmpdir)
 
     if (FONCIER_STATIC_DIR is not None):
@@ -135,11 +135,11 @@ def do(year, format, proj, email, cities):
 
     # launch extraction
     with psycopg2.connect(PG_CONNECT_STRING) as conn:
-        if format == "shp" :
-            export_schema_to_shapefile_or_mapfile(year, proj, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
-        elif format == "mifmid" :
-            export_schema_to_shapefile_or_mapfile(year, proj, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
-        elif format == "postgis" :
+        if format == "shp":
+            export_schema_to_shapefile_or_mapinfo(year, proj, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
+        elif format == "mifmid":
+            export_schema_to_shapefile_or_mapinfo(year, proj, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
+        elif format == "postgis":
             export_schema_to_sql(year, proj, tmpdir, conn, PG_CONNECT_STRING)
         else:
             raise Exception("Invalid format : %s" % format)
