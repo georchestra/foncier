@@ -3,6 +3,7 @@ class BaseConfig(object):
     # General config
     DEBUG = True
     ROLE_PREFIX = 'ROLE_FONCIER_'
+    FONCIER_EXTRACTS_DIR = '/tmp'
     # LDAP-related keys:
     LDAP_URI = 'ldap://localhost:10389'
     LDAP_BINDDN = 'cn=admin,dc=georchestra,dc=org'

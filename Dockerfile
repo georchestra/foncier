@@ -30,5 +30,7 @@ RUN groupadd --gid 999 www && \
 
 USER www
 
+VOLUME ["/extracts"]
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["uwsgi", "--socket", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app", "--uid", "www"]

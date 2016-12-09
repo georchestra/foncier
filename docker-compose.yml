@@ -9,6 +9,8 @@ app:
     - UWSGI_MASTER=1
     - CELERY_BROKER_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  volumes:
+    - foncier_extracts:/extracts:ro
   links:
     - ldap
     - redis
@@ -21,12 +23,14 @@ worker:
     - CELERY_BROKER_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
     - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
+    - LOCAL_SMTP_HOST=smtp
   volumes:
     - foncier_staticfiles:/static
     - foncier_extracts:/extracts
   links:
     - redis
     - database
+    - smtp
 
 
 # Proxy
@@ -71,3 +75,15 @@ database:
     POSTGRES_DB: geoserver
     POSTGRES_PASSWORD: geoserver
     POSTGRES_USER: geoserver
+
+
+# SMTP
+smtp:
+  image: camptocamp/smtp-sink
+
+webmail:
+  image: camptocamp/sqwebmail
+  ports:
+    - "8081:80"
+  volumes_from:
+    - smtp:rw

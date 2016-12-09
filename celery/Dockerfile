@@ -18,5 +18,10 @@ WORKDIR /celery
 
 VOLUME ["/static", "/extracts"]
 
+RUN groupadd --gid 999 www && \
+    useradd -r -ms /bin/bash --uid 999 --gid 999 www
+
+USER www
+
 # run the worker
 ENTRYPOINT ["celery", "-A", "extractions", "worker", "--loglevel=info"]
