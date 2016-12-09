@@ -51,10 +51,10 @@ def run_command(args):
     p.wait()
 
     if p.returncode != 0:
-        print("Commande : %s" % " ".join(args))
-        print("Exit code : %s" % p.returncode)
-        print("STDOUT : %s" % p.stdout.read().decode())
-        print("STDERR : %s" % p.stderr.read().decode())
+        print("Command: %s" % " ".join(args))
+        print("Exit code: %s" % p.returncode)
+        print("STDOUT: %s" % p.stdout.read().decode())
+        print("STDERR: %s" % p.stderr.read().decode())
         raise Exception("Error running %s" % " ".join(args))
 
 
@@ -148,7 +148,7 @@ def sendmail(to, message):
 def do(year, format, proj, email, cities):
 
     uuid = do.request.id
-    extraction_id = 'foncier_{0}{1}{2}_{3}'.format(year, format, proj, uuid)
+    extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
     sendmail(email, "Le traitement a commencé")
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     print('Created temp dir %s' % tmpdir)

@@ -65,6 +65,8 @@ redis:
   volumes:
     - redis_data:/data
 
+
+# Database with Foncier (geo)data
 database:
   image: camptocamp/postgis:9.5
   volumes:
