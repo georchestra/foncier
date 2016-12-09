@@ -35,7 +35,7 @@ def load_user():
 
 @app.route('/', methods=['GET'])
 def index():
-    if acces_foncier(g.roles):
+    if acces_foncier(g.roles) and len(g.cities) > 0:
         return render_template('index.html')
     else:
         return render_template('sorry.html')

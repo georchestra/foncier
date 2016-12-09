@@ -16,15 +16,17 @@ def extract_cp(org):
                     current_app.config['LDAP_BINDDN'],
                     current_app.config['LDAP_PASSWD'],
                     auto_bind=True)
-    print('Successfully connected to LDAP')
 
     cnx.search(search_base=current_app.config['LDAP_ORGS_BASEDN'],
                search_filter=current_app.config['LDAP_SEARCH_FILTER'] % org,
                search_scope=LEVEL,
-               attributes=["businessCategory","description"])
+               attributes=["businessCategory", "description"])
 
     for entry in cnx.entries:
-        res = ','.join(entry['description']).split(',')
+        if len(entry['description']) == 0:
+            res = []
+        else:
+            res = ','.join(entry['description']).split(',')
         cnx.unbind()
         return res
 
