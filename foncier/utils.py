@@ -1,30 +1,36 @@
 # -*- coding: utf-8 -*-
 
 from ldap3 import Connection, LEVEL
-from flask import current_app
+import os
+
+ROLE_PREFIX = os.environ.get('ROLE_PREFIX', 'ROLE_FONCIER_')
+LDAP_URI = os.environ.get('LDAP_URI')
+LDAP_BINDDN = os.environ.get('LDAP_BINDDN')
+LDAP_PASSWD = os.environ.get('LDAP_PASSWD')
+LDAP_ORGS_BASEDN = os.environ.get('LDAP_ORGS_BASEDN')
+LDAP_SEARCH_FILTER = os.environ.get('LDAP_SEARCH_FILTER')
 
 
 def acces_foncier(roles):
     for role in roles:
-        if role.startswith(current_app.config['ROLE_PREFIX']):
+        if role.startswith(ROLE_PREFIX):
             return True
     return False
 
 
 def extract_cp(org):
-    cnx = Connection(current_app.config['LDAP_URI'],
-                    current_app.config['LDAP_BINDDN'],
-                    current_app.config['LDAP_PASSWD'],
-                    auto_bind=True)
-    print('Successfully connected to LDAP')
+    cnx = Connection(LDAP_URI, LDAP_BINDDN, LDAP_PASSWD, auto_bind=True)
 
-    cnx.search(search_base=current_app.config['LDAP_ORGS_BASEDN'],
-               search_filter=current_app.config['LDAP_SEARCH_FILTER'] % org,
+    cnx.search(search_base=LDAP_ORGS_BASEDN,
+               search_filter=LDAP_SEARCH_FILTER % org,
                search_scope=LEVEL,
-               attributes=["businessCategory","description"])
+               attributes=["businessCategory", "description"])
 
     for entry in cnx.entries:
-        res = ','.join(entry['description']).split(',')
+        if len(entry['description']) == 0:
+            res = []
+        else:
+            res = ','.join(entry['description']).split(',')
         cnx.unbind()
         return res
 

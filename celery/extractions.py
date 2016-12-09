@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
 import tempfile
 import shutil
 from zipfile import ZipFile
@@ -35,6 +34,8 @@ FONCIER_STATIC_DIR = env.get('FONCIER_STATIC_DIR')
 
 PG_CONNECT_STRING = env.get("PG_CONNECT_STRING")
 
+PROCESS_TIMEOUT = env.get("PROCESS_TIMEOUT", 3600)
+
 taskmanager = Celery('extractions',
                      broker=CELERY_BROKER_URL,
                      backend=CELERY_RESULT_BACKEND)
@@ -48,7 +49,7 @@ def run_command(args):
     :return: None
     """
     p = Popen(args, stdout=PIPE, stderr=PIPE)
-    p.wait()
+    p.wait(int(PROCESS_TIMEOUT))
 
     if p.returncode != 0:
         print("Command: %s" % " ".join(args))
@@ -72,12 +73,13 @@ def get_all_tables(conn, year):
     return res
 
 
-def export_schema_to_shapefile_or_mapinfo(year, proj, output_dir, format, conn, pg_connect_string):
+def export_schema_to_shapefile_or_mapinfo(year, proj, cities, output_dir, format, conn, pg_connect_string):
     """
     Extract all table in schema foncier_<year> where 'year' is the first argument and generates files according to
     'format' in 'output_dir' folder.
     :param year: numeric year to append to 'foncier_' to build schema name
     :param proj: output projection
+    :param cities: array of INSEE numeric identifier to filter extraction, field 'idcom' will be used
     :param output_dir: folder where files will be writen
     :param format: ogr2ogr file format like : "ESRI Shapefile" or "MapInfo File"
     :param conn: a psycopg connection instance
@@ -85,8 +87,10 @@ def export_schema_to_shapefile_or_mapinfo(year, proj, output_dir, format, conn, 
     be added
     :return: None
     """
+
     for table in get_all_tables(conn, year):
-        args = ["ogr2ogr", 
+        args = ["ogr2ogr",
+                "-where", "idcom IN (%s)" % ",".join(cities),
                 "-a_srs", "EPSG:%s" % proj,
                 "-t_srs", "EPSG:%s" % proj,
                 "-f", format, output_dir,
@@ -95,24 +99,27 @@ def export_schema_to_shapefile_or_mapinfo(year, proj, output_dir, format, conn, 
         run_command(args)
 
 
-def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
+def export_schema_to_sql(year, proj, cities, output_dir, conn, pg_connect_string):
     """
     Extract all table in schema foncier_<year> where 'year' is the first argument and one sql file to create schema,
     tables and inserts data
     :param year: numeric year to append to 'foncier_' to build schema name
     :param proj: output projection
+    :param cities: array of INSEE numeric identifier to filter extraction, field 'idcom' will be used
     :param output_dir: folder where files will be writen
     :param conn: a psycopg connection instance
     :param pg_connect_string: a string that contains option to connect to database with ogr2ogr. 'schemas' option will
     be added
     :return: None
     """
+
     with open(join(output_dir, "foncier_%s.sql" % year), 'wb') as f:
         f.write(("CREATE SCHEMA foncier_%s;\n" % year).encode())
 
         for table in get_all_tables(conn, year):
             table_output_file = join(output_dir, "export_table_%s.sql" % table)
             args = ["ogr2ogr",
+                    "-where", "idcom IN (%s)" % ",".join(cities),
                     "-a_srs", "EPSG:%s" % proj,
                     "-t_srs", "EPSG:%s" % proj,
                     "-f", "PGDump", table_output_file,
@@ -153,6 +160,9 @@ def do(year, format, proj, email, cities):
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     print('Created temp dir %s' % tmpdir)
 
+    # format cities parameter it's stored as string in database
+    cities = ["'%s'" % c for c in cities]
+
     if (FONCIER_STATIC_DIR is not None):
         try:
             copy_tree(FONCIER_STATIC_DIR, tmpdir)
@@ -164,11 +174,11 @@ def do(year, format, proj, email, cities):
     # launch extraction
     with psycopg2.connect(PG_CONNECT_STRING) as conn:
         if format == "shp":
-            export_schema_to_shapefile_or_mapinfo(year, proj, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
+            export_schema_to_shapefile_or_mapinfo(year, proj, cities, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
         elif format == "mifmid":
-            export_schema_to_shapefile_or_mapinfo(year, proj, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
+            export_schema_to_shapefile_or_mapinfo(year, proj, cities, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
         elif format == "postgis":
-            export_schema_to_sql(year, proj, tmpdir, conn, PG_CONNECT_STRING)
+            export_schema_to_sql(year, proj, cities, tmpdir, conn, PG_CONNECT_STRING)
         else:
             raise Exception("Invalid format : %s" % format)
 

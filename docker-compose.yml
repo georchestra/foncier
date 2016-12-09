@@ -9,6 +9,12 @@ app:
     - UWSGI_MASTER=1
     - CELERY_BROKER_URL=redis://redis:6379/0
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    - LDAP_URI=ldap://ldap:389
+    - LDAP_BINDDN=cn=admin,dc=georchestra,dc=org
+    - LDAP_PASSWD=secret
+    - LDAP_ORGS_BASEDN=ou=orgs,dc=georchestra,dc=org
+    - LDAP_SEARCH_FILTER=(&(cn=%s)(objectClass=groupOfMembers))
+    - DEBUG=False
   volumes:
     - foncier_extracts:/extracts:ro
   links:
@@ -24,6 +30,7 @@ worker:
     - CELERY_RESULT_BACKEND=redis://redis:6379/0
     - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
     - LOCAL_SMTP_HOST=smtp
+    - PROCESS_TIMEOUT=3600
   volumes:
     - foncier_staticfiles:/static
     - foncier_extracts:/extracts
