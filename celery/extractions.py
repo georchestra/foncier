@@ -5,7 +5,8 @@ import time
 import tempfile
 import shutil
 from zipfile import ZipFile
-
+from smtplib import SMTP, SMTPException
+from email.mime.text import MIMEText
 from celery import Celery
 from distutils.dir_util import copy_tree
 import psycopg2
@@ -13,9 +14,21 @@ from subprocess import Popen, PIPE
 from os import remove, listdir
 from os.path import isfile, join
 
+
 env=os.environ
-CELERY_BROKER_URL = env.get('CELERY_BROKER_URL','redis://localhost:6379'),
-CELERY_RESULT_BACKEND = env.get('CELERY_RESULT_BACKEND','redis://localhost:6379')
+CELERY_BROKER_URL = env.get('CELERY_BROKER_URL', 'redis://localhost:6379'),
+CELERY_RESULT_BACKEND = env.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379')
+
+# CAUTION - SMTP_PORT env var might have value tcp://172.17.0.2:25
+# in docker container linked with another "smtp" container.
+# Reason why we're using LOCAL_SMTP_PORT instead
+SMTP_HOST = env.get('LOCAL_SMTP_HOST', 'localhost')
+SMTP_PORT = env.get('LOCAL_SMTP_PORT', 25)
+
+MAIL_FROM = env.get('MAIL_FROM', 'ppige@epf-npdc.fr')
+MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[PPIGE - Foncier] Votre extraction')
+
+BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
 
 FONCIER_EXTRACTS_DIR = env.get('FONCIER_EXTRACTS_DIR', '/tmp')
 FONCIER_STATIC_DIR = env.get('FONCIER_STATIC_DIR')
@@ -38,10 +51,10 @@ def run_command(args):
     p.wait()
 
     if p.returncode != 0:
-        print("Commande : %s" % " ".join(args))
-        print("Exit code : %s" % p.returncode)
-        print("STDOUT : %s" % p.stdout.read().decode())
-        print("STDERR : %s" % p.stderr.read().decode())
+        print("Command: %s" % " ".join(args))
+        print("Exit code: %s" % p.returncode)
+        print("STDOUT: %s" % p.stdout.read().decode())
+        print("STDERR: %s" % p.stderr.read().decode())
         raise Exception("Error running %s" % " ".join(args))
 
 
@@ -117,11 +130,26 @@ def export_schema_to_sql(year, proj, output_dir, conn, pg_connect_string):
             remove(table_output_file)
 
 
+def sendmail(to, message):
+    msg = MIMEText(message.encode('utf-8'), _charset='utf-8')
+    msg['Subject'] = MAIL_SUBJECT
+    msg['From'] = MAIL_FROM
+    msg['To'] = to
+    try:
+        smtpObj = SMTP(SMTP_HOST, SMTP_PORT)
+        smtpObj.sendmail(MAIL_FROM, [to], msg.as_string())
+        smtpObj.quit()
+        print('Successfully sent email to %s' % to)
+    except SMTPException:
+        print('Error: unable to send email to %s' % to)
+
+
 @taskmanager.task(name='extraction.do')
 def do(year, format, proj, email, cities):
 
-    extraction_id = 'foncier_{0}{1}{2}_{3}'.format(year, format, proj, do.request.id)
-
+    uuid = do.request.id
+    extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
+    sendmail(email, "Le traitement a commencé")
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     print('Created temp dir %s' % tmpdir)
 
@@ -156,8 +184,8 @@ def do(year, format, proj, email, cities):
     # delete directory after zipping:
     shutil.rmtree(tmpdir)
     print('Removed dir %s' % tmpdir)
-
-    # return zip file
-    time.sleep(10)
-    return 'done with %s ! We should now send an email to %s with a link to %s' % (cities, email, zip_name)
+    # send email with a link to download the generated archive:
+    sendmail(email, "Extraction terminée: %/retrieve/%s" % (BASE_URL, uuid))
+    # return zip file name
+    return zip_name
 

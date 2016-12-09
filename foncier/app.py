@@ -59,18 +59,19 @@ def submit():
 def retrieve(uuid):
     res = taskmanager.AsyncResult(uuid)
 
-    def generate():
-        yield 'Hello '
-        yield uuid
-        yield ' !'
+    def generate(filepath):
+        with open(filepath) as f:
+            while True:
+                data = f.read(4096)
+                if not data:
+                    break
+                yield data
 
     # TODO: handle erroneous uuids
     if res.state == states.PENDING:
         return render_template('retrieve.html', uuid=uuid)
     else:
-        return str(res.result)
-        # return Response(stream_with_context(generate()))
-
+        return Response(generate(str(res.result)), mimetype='application/zip')
 
 if __name__ == '__main__':
     app.run(debug=app.config['DEBUG'])

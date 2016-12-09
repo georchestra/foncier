@@ -25,8 +25,12 @@ EXPOSE 5000
 
 RUN chmod +x /docker-entrypoint.sh /docker-entrypoint.d/*
 
-RUN groupadd --gid 999 www && \
-    useradd -r -ms /bin/bash --uid 999 --gid 999 www
+RUN mkdir /extracts && \
+    groupadd --gid 999 www && \
+    useradd -r -ms /bin/bash --uid 999 --gid 999 www && \
+    chown www:www /extracts
+
+VOLUME ["/extracts"]
 
 USER www
 

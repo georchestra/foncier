@@ -16,7 +16,14 @@ RUN pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt
 COPY . /celery
 WORKDIR /celery
 
+RUN mkdir /extracts && \
+    groupadd --gid 999 www && \
+    useradd -r -ms /bin/bash --uid 999 --gid 999 www && \
+    chown www:www /extracts
+
 VOLUME ["/static", "/extracts"]
+
+USER www
 
 # run the worker
 ENTRYPOINT ["celery", "-A", "extractions", "worker", "--loglevel=info"]
