@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
 import tempfile
 import shutil
 from zipfile import ZipFile
@@ -35,6 +34,8 @@ FONCIER_STATIC_DIR = env.get('FONCIER_STATIC_DIR')
 
 PG_CONNECT_STRING = env.get("PG_CONNECT_STRING")
 
+PROCESS_TIMEOUT = env.get("PROCESS_TIMEOUT", 3600)
+
 taskmanager = Celery('extractions',
                      broker=CELERY_BROKER_URL,
                      backend=CELERY_RESULT_BACKEND)
@@ -48,7 +49,7 @@ def run_command(args):
     :return: None
     """
     p = Popen(args, stdout=PIPE, stderr=PIPE)
-    p.wait()
+    p.wait(int(PROCESS_TIMEOUT))
 
     if p.returncode != 0:
         print("Command: %s" % " ".join(args))
