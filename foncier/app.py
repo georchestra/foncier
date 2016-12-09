@@ -6,13 +6,13 @@ from rights_decorator import rights_required
 from tasks import taskmanager
 from celery.result import AsyncResult
 import celery.states as states
+import os
 
 # create the app:
 app = Flask(__name__)
-# configure it:
-app.config.from_object('config.BaseConfig')
-app.config.from_envvar('FONCIER_SETTINGS', silent=True)
 
+ROLE_PREFIX = os.environ.get('ROLE_PREFIX', 'ROLE_FONCIER_')
+DEBUG = os.environ.get('DEBUG', 'False')
 
 @app.before_request
 def load_user():
@@ -27,7 +27,7 @@ def load_user():
     # get LDAP org object, extract description field with list of areas:
     g.cities = extract_cp(g.org)
     # store user roles & available millésimes
-    prefix = app.config['ROLE_PREFIX']
+    prefix = ROLE_PREFIX
     rolesHeader = request.headers.get('sec-roles')
     g.roles = rolesHeader.split(';') if rolesHeader is not None else []
     g.years = [r[len(prefix):] for r in g.roles if r.startswith(prefix)]
@@ -74,4 +74,4 @@ def retrieve(uuid):
         return Response(generate(str(res.result)), mimetype='application/zip')
 
 if __name__ == '__main__':
-    app.run(debug=app.config['DEBUG'])
+    app.run(debug=DEBUG=="True")
