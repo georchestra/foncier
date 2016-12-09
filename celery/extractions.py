@@ -185,7 +185,7 @@ def do(year, format, proj, email, cities):
     shutil.rmtree(tmpdir)
     print('Removed dir %s' % tmpdir)
     # send email with a link to download the generated archive:
-    sendmail(email, "Extraction terminée: {0}".format(BASE_URL + '/retrieve/' + uuid))
+    sendmail(email, "Extraction terminée: %/retrieve/%s" % (BASE_URL, uuid))
     # return zip file name
     return zip_name
 

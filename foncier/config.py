@@ -10,4 +10,3 @@ class BaseConfig(object):
     LDAP_PASSWD = 'secret'
     LDAP_ORGS_BASEDN = 'ou=orgs,dc=georchestra,dc=org'
     LDAP_SEARCH_FILTER = '(&(cn=%s)(objectClass=groupOfMembers))'
-

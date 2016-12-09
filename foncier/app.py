@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, request, Response, g, stream_with_context
-from utils import *
+from utils import acces_foncier, extract_cp
 from rights_decorator import rights_required
 from tasks import taskmanager
 from celery.result import AsyncResult
