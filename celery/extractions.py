@@ -87,9 +87,6 @@ def export_schema_to_shapefile_or_mapinfo(year, proj, cities, output_dir, format
     :return: None
     """
 
-    # format cities parameter
-    cities = ["'%s'" % c for c in cities]
-
     for table in get_all_tables(conn, year):
         args = ["ogr2ogr",
                 "-where", "idcom IN (%s)" % ",".join(cities),
@@ -114,9 +111,6 @@ def export_schema_to_sql(year, proj, cities, output_dir, conn, pg_connect_string
     be added
     :return: None
     """
-
-    # format cities parameter
-    cities = ["'%s'" % c for c in cities]
 
     with open(join(output_dir, "foncier_%s.sql" % year), 'wb') as f:
         f.write(("CREATE SCHEMA foncier_%s;\n" % year).encode())
@@ -164,6 +158,9 @@ def do(year, format, proj, email, cities):
     sendmail(email, "Le traitement a commencé")
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     print('Created temp dir %s' % tmpdir)
+
+    # format cities parameter it's stored as string in database
+    cities = ["'%s'" % c for c in cities]
 
     if (FONCIER_STATIC_DIR is not None):
         try:
