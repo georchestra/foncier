@@ -60,7 +60,7 @@ def retrieve(uuid):
     res = taskmanager.AsyncResult(uuid)
 
     def generate(filepath):
-        with open(filepath) as f:
+        with open(filepath, 'rb') as f:
             while True:
                 data = f.read(4096)
                 if not data:
