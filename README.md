@@ -35,13 +35,6 @@ flask run
 Puis RDV sur [http://localhost:5000/](http://localhost:5000/)
 
 
-Notez pour finir qu'il est possible de surcharger la [configuration par défaut](foncier/config.py) par d'autres valeurs (un exemple [ici](resources/config.py)) via:
-```
-export FLASK_APP=foncier/app.py
-export FONCIER_SETTINGS=/path/to/config.py
-flask run
-```
-
 ## Utilisation
 
 Si la requête entrante est munie d'un header `sec-roles` composé d'une suite de chaînes de caractères du type `ROLE_FONCIER_XXXX`, séparées par des points virgules (eg: `sec-roles = ROLE_FONCIER_2009;ROLE_FONCIER_2011`) alors la page d'accueil présente un formulaire d'extraction permettant de choisir un millésime à extraire (à choisir parmi les années composant `sec-roles`).
