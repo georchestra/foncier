@@ -35,4 +35,4 @@ VOLUME ["/extracts"]
 USER www
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["uwsgi", "--socket", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app", "--uid", "www"]
+CMD ["uwsgi", "--http", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app", "--uid", "www"]
