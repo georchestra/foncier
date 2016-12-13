@@ -10,7 +10,7 @@
 
         <p>Bonjour {{ g.firstname }} {{ g.lastname }}, vous avez les rôles {{ ', '.join(g.roles) }} qui vous donnent accès aux millésimes {{ ', '.join(g.years) }}</p>
 
-        <form action="/submit" method="POST">
+        <form action="submit" method="POST">
             <fieldset>
                 <legend>Paramètres de l'extraction</legend>
                 <b>Millésime</b> :<br>
