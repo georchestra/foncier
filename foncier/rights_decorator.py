@@ -10,7 +10,6 @@ def rights_required(f):
     def decorated_function(*args, **kwargs):
         # TODO: get LDAP org object, check businessCategory: REGISTERED
         if g.username is None or not acces_foncier(g.roles):
-            return redirect('/cas/login?url='+request.url)
-            # return redirect(request.url + '?login')
+            return redirect(request.url + '?login')
         return f(*args, **kwargs)
     return decorated_function
