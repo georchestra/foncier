@@ -8,7 +8,8 @@
     <body>
         <h1>Foncier PPIGE</h1>
 
-        <p>Bonjour {{ g.firstname }} {{ g.lastname }}, vous avez les rôles {{ ', '.join(g.roles) }} qui vous donnent accès aux millésimes {{ ', '.join(g.years) }}</p>
+        <p>Bonjour {{ g.firstname }} {{ g.lastname }},</p>
+        <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(g.years) }}. Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme.</p>
 
         <form action="submit" method="POST">
             <fieldset>
@@ -31,6 +32,5 @@
             </fieldset>
         </form>
 
-        <p>Vous avez accès aux fichiers fonciers des villes de code INSEE : {{ ', '.join(g.cities) }}</p>
     </body>
 </html>

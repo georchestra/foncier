@@ -30,7 +30,7 @@ def load_user():
     prefix = ROLE_PREFIX
     rolesHeader = request.headers.get('sec-roles')
     g.roles = rolesHeader.split(';') if rolesHeader is not None else []
-    g.years = [r[len(prefix):] for r in g.roles if r.startswith(prefix)]
+    g.years = sorted([r[len(prefix):] for r in g.roles if r.startswith(prefix)])
 
 
 @app.route('/', methods=['GET'])
