@@ -5,34 +5,34 @@
         <title>Foncier PPIGE</title>
     </head>
 
-    <body>
+    <body style="margin: 0;">
         <iframe src="/portail/external_head" style="width:100%;height:73px;border:none;overflow:hidden;" scrolling="no" frameborder="0"></iframe>
+        <div style="margin: 0 8px;">
+            <h1>Foncier PPIGE</h1>
 
-        <h1>Foncier PPIGE</h1>
+            <p>Bonjour {{ g.firstname }} {{ g.lastname }},</p>
+            <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(g.years) }}. Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme.</p>
 
-        <p>Bonjour {{ g.firstname }} {{ g.lastname }},</p>
-        <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(g.years) }}. Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme.</p>
-
-        <form action="submit" method="POST">
-            <fieldset>
-                <legend>Paramètres de l'extraction</legend>
-                <b>Millésime</b> :<br>
-                {% for year in g.years %}
-                <input type="radio" name="year" value="{{ year }}" {{ 'checked' if year == g.years[0] }}> {{ year }}
-                {% endfor %}
-                <br><br>
-                <b>Projection</b> :<br>
-                <input type="radio" name="proj" value="2154" checked> Lambert 93
-                <input type="radio" name="proj" value="4326"> WGS 84
-                <br><br>
-                <b>Format</b> :<br>
-                <input type="radio" name="format" value="shp" checked> Shapefile
-                <input type="radio" name="format" value="mifmid"> MapInfo
-                <input type="radio" name="format" value="postgis"> PostGIS
-                <br><br>
-                <input type="submit" value="Commander">
-            </fieldset>
-        </form>
-
+            <form action="submit" method="POST">
+                <fieldset>
+                    <legend>Paramètres de l'extraction</legend>
+                    <b>Millésime</b> :<br>
+                    {% for year in g.years %}
+                    <input type="radio" name="year" value="{{ year }}" {{ 'checked' if year == g.years[0] }}> {{ year }}
+                    {% endfor %}
+                    <br><br>
+                    <b>Projection</b> :<br>
+                    <input type="radio" name="proj" value="2154" checked> Lambert 93
+                    <input type="radio" name="proj" value="4326"> WGS 84
+                    <br><br>
+                    <b>Format</b> :<br>
+                    <input type="radio" name="format" value="shp" checked> Shapefile
+                    <input type="radio" name="format" value="mifmid"> MapInfo
+                    <input type="radio" name="format" value="postgis"> PostGIS
+                    <br><br>
+                    <input type="submit" value="Commander">
+                </fieldset>
+            </form>
+        </div>
     </body>
 </html>

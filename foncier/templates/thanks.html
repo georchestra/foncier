@@ -6,17 +6,18 @@
         <title>Foncier PPIGE</title>
     </head>
 
-    <body>
+    <body style="margin: 0;">
         <iframe src="/portail/external_head" style="width:100%;height:73px;border:none;overflow:hidden;" scrolling="no" frameborder="0"></iframe>
+        <div style="margin: 0 8px;">
 
-        <h1>Foncier PPIGE</h1>
+            <h1>Foncier PPIGE</h1>
 
-        <p>Votre commande du millésime <b>{{ values.get('year') }}</b> au format <b>{{ values.get('format').upper() }} / EPSG:{{ values.get('proj') }}</b> a été enregistrée sous la référence {{ uuid }} et sera traitée dans les meilleurs délais.</p>
-        <p>Elle sera envoyée à l'adresse <b>{{ g.email }}</b></p>
-        
-        <p><br></p>
+            <p>Votre commande du millésime <b>{{ values.get('year') }}</b> au format <b>{{ values.get('format').upper() }} / EPSG:{{ values.get('proj') }}</b> a été enregistrée sous la référence {{ uuid }} et sera traitée dans les meilleurs délais.</p>
+            <p>Elle sera envoyée à l'adresse <b>{{ g.email }}</b></p>
+            
+            <p><br></p>
 
-        <p>Adresse de suivi : <a href="retrieve/{{ uuid }}">retrieve/{{ uuid }}</a></p>
-
+            <p>Adresse de suivi : <a href="retrieve/{{ uuid }}">retrieve/{{ uuid }}</a></p>
+        </div>
     </body>
 </html>
