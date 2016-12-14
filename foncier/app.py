@@ -24,6 +24,8 @@ def load_user():
     # store org
     # if user is memberOf cn=psc,ou=orgs,dc=georchestra,dc=org then sec-org is "psc"
     g.org = request.headers.get('sec-org')
+    # Nice org name:
+    g.orgname = request.headers.get('sec-orgname')
     # get LDAP org object, extract description field with list of areas:
     g.cities = extract_cp(g.org)
     # store user roles & available millésimes

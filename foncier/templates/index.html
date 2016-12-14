@@ -11,7 +11,7 @@
             <h1>Foncier PPIGE</h1>
 
             <p>Bonjour {{ g.firstname }} {{ g.lastname }},</p>
-            <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(g.years) }}. Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme.</p>
+            <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(g.years) }}.<br/>Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme ({{ g.orgname }}).</p>
 
             <form action="submit" method="POST">
                 <fieldset>
