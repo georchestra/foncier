@@ -3,6 +3,7 @@
 import os
 import tempfile
 import shutil
+import logging
 from zipfile import ZipFile
 from smtplib import SMTP, SMTPException
 from email.mime.text import MIMEText
@@ -13,6 +14,8 @@ from subprocess import Popen, PIPE
 from os import remove, listdir
 from os.path import isfile, join
 
+
+logger = logging.getLogger('worker')
 
 env=os.environ
 CELERY_BROKER_URL = env.get('CELERY_BROKER_URL', 'redis://localhost:6379'),
@@ -30,6 +33,7 @@ MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[PPIGE - Foncier] Votre extraction')
 BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
 
 FONCIER_EXTRACTS_DIR = env.get('FONCIER_EXTRACTS_DIR', '/tmp')
+FONCIER_EXTRACTS_RETENTION_DAYS = int(env.get('FONCIER_EXTRACTS_RETENTION_DAYS', 1))
 FONCIER_STATIC_DIR = env.get('FONCIER_STATIC_DIR')
 
 PG_CONNECT_STRING = env.get("PG_CONNECT_STRING")
@@ -52,10 +56,10 @@ def run_command(args):
     p.wait(int(PROCESS_TIMEOUT))
 
     if p.returncode != 0:
-        print("Command: %s" % " ".join(args))
-        print("Exit code: %s" % p.returncode)
-        print("STDOUT: %s" % p.stdout.read().decode())
-        print("STDERR: %s" % p.stderr.read().decode())
+        logger.error("Command: %s" % " ".join(args))
+        logger.error("Exit code: %s" % p.returncode)
+        logger.error("STDOUT: %s" % p.stdout.read().decode())
+        logger.error("STDERR: %s" % p.stderr.read().decode())
         raise Exception("Error running %s" % " ".join(args))
 
 
@@ -146,19 +150,36 @@ def sendmail(to, message):
         smtpObj = SMTP(SMTP_HOST, SMTP_PORT)
         smtpObj.sendmail(MAIL_FROM, [to], msg.as_string())
         smtpObj.quit()
-        print('Successfully sent email to %s' % to)
+        logger.info('Successfully sent email to %s' % to)
     except SMTPException:
-        print('Error: unable to send email to %s' % to)
+        logger.error('Error: unable to send email to %s' % to)
 
 
 @taskmanager.task(name='extraction.do')
 def do(year, format, proj, email, cities):
 
+    # clean older files
+    now = time.time()
+    for f in os.listdir(FONCIER_EXTRACTS_DIR):
+        file = join(FONCIER_EXTRACTS_DIR, f)
+        try:
+            creation = os.path.getctime(file)
+            # might throw FileNotFoundError if another worker does the same
+        except Exception:
+            sys.exc_clear()
+        if (now - creation) // (24 * 3600) >= FONCIER_EXTRACTS_RETENTION_DAYS:
+            try:
+                os.unlink(file)
+                logger.info('Removed file %s because it was older than %s days' % (f, FONCIER_EXTRACTS_RETENTION_DAYS))
+            except Exception:
+                sys.exc_clear()
+
+    # process request
     uuid = do.request.id
     extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
     sendmail(email, "Le traitement a commencé")
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
-    print('Created temp dir %s' % tmpdir)
+    logger.info('Created temp dir %s' % tmpdir)
 
     # format cities parameter it's stored as string in database
     cities = ["'%s'" % c for c in cities]
@@ -167,7 +188,7 @@ def do(year, format, proj, email, cities):
         try:
             copy_tree(FONCIER_STATIC_DIR, tmpdir)
         except IOError as e:
-            print('IOError copying %s to %s' % (FONCIER_STATIC_DIR, tmpdir))
+            logger.error('IOError copying %s to %s' % (FONCIER_STATIC_DIR, tmpdir))
 
     # TODO sanitize input
 
@@ -180,7 +201,7 @@ def do(year, format, proj, email, cities):
         elif format == "postgis":
             export_schema_to_sql(year, proj, cities, tmpdir, conn, PG_CONNECT_STRING)
         else:
-            raise Exception("Invalid format : %s" % format)
+            raise Exception("Invalid format: %s" % format)
 
     # create ZIP archive
     try:
@@ -189,13 +210,13 @@ def do(year, format, proj, email, cities):
             for file in [f for f in listdir(tmpdir) if isfile(join(tmpdir, f))]:
                 myzip.write(join(tmpdir, file), arcname=join(extraction_id, file))
     except IOError as e:
-        print('IOError while zipping %s' % tmpdir)
+        logger.error('IOError while zipping %s' % tmpdir)
 
     # delete directory after zipping:
     shutil.rmtree(tmpdir)
-    print('Removed dir %s' % tmpdir)
+    logger.info('Removed dir %s' % tmpdir)
     # send email with a link to download the generated archive:
-    sendmail(email, 'Extraction terminée: %s/retrieve/%s' % (BASE_URL, uuid))
+    sendmail(email, 'Extraction terminée : %s/retrieve/%s' % (BASE_URL, uuid))
     # return zip file name
     return zip_name
 

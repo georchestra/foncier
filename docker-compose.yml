@@ -31,6 +31,7 @@ worker:
     - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
     - LOCAL_SMTP_HOST=smtp
     - PROCESS_TIMEOUT=3600
+    - FONCIER_EXTRACTS_RETENTION_DAYS=1
   volumes:
     - foncier_staticfiles:/static
     - foncier_extracts:/extracts
