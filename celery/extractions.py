@@ -4,6 +4,7 @@ import os
 import tempfile
 import shutil
 import logging
+import time
 from zipfile import ZipFile
 from smtplib import SMTP, SMTPException
 from email.mime.text import MIMEText
