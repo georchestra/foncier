@@ -194,8 +194,6 @@ def do(year, format, proj, email, cities):
         except IOError as e:
             logger.error('IOError copying %s to %s' % (FONCIER_STATIC_DIR, tmpdir))
 
-    # TODO sanitize input
-
     # launch extraction
     with psycopg2.connect(PG_CONNECT_STRING) as conn:
         if format == "shp":
