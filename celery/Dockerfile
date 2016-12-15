@@ -26,4 +26,4 @@ VOLUME ["/static", "/extracts"]
 USER www
 
 # run the worker
-ENTRYPOINT ["celery", "-A", "extractions", "worker", "--loglevel=info"]
+ENTRYPOINT ["celery", "-A", "extractions", "worker", "--loglevel=info", "--concurrency=1"]
