@@ -16,10 +16,10 @@ RUN pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt
 COPY . /celery
 WORKDIR /celery
 
-RUN mkdir /extracts && \
+RUN mkdir /extracts /static && \
     groupadd --gid 999 www && \
     useradd -r -ms /bin/bash --uid 999 --gid 999 www && \
-    chown www:www /extracts
+    chown www:www /extracts /static
 
 VOLUME ["/static", "/extracts"]
 
