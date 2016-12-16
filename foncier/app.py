@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, request, Response, g, stream_with_context
+from werkzeug.datastructures import Headers
+
 from utils import acces_foncier, extract_cp
 from rights_decorator import rights_required
 from tasks import taskmanager
@@ -68,12 +70,17 @@ def retrieve(uuid):
                 if not data:
                     break
                 yield data
-
-    # TODO: handle erroneous uuids
-    if res.state == states.PENDING:
-        return render_template('retrieve.html', uuid=uuid)
-    else:
-        return Response(generate(str(res.result)), mimetype='application/zip')
+    if res.state == states.SUCCESS:
+        headers = Headers()
+        headers.add('Content-Type', 'application/zip')
+        headers.add('Content-Disposition', 'attachment', filename='%s.zip' % uuid)
+        return Response(generate(str(res.result)), headers=headers)
+    elif res.state == states.STARTED:
+        return render_template('started.html', uuid=uuid)
+    elif res.state == states.FAILURE:
+        return render_template('failure.html', error=res.result)
+    else: # PENDING and other states (include unknown UUID)
+        return render_template('pending.html', uuid=uuid)
 
 if __name__ == '__main__':
     app.run(debug=DEBUG=="True")
