@@ -27,6 +27,10 @@ def extract_cp(org):
                attributes=["businessCategory", "description"])
 
     for entry in cnx.entries:
+        # check status of org
+        if entry['businessCategory'] != 'REGISTERED':
+            raise ValueError('Organism is still pending')
+
         if len(entry['description']) == 0:
             res = []
         else:

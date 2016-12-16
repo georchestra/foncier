@@ -29,8 +29,11 @@ def load_user():
     g.org = request.headers.get('sec-org')
     # Nice org name:
     g.orgname = request.headers.get('sec-orgname')
-    # get LDAP org object, extract description field with list of areas:
-    g.cities = extract_cp(g.org)
+    try:
+        # get LDAP org object, extract description field with list of areas:
+        g.cities = extract_cp(g.org)
+    except ValueError:
+        return render_template('sorry.html')
     # store user roles & available millésimes
     prefix = ROLE_PREFIX
     rolesHeader = request.headers.get('sec-roles')
