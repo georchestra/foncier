@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 ROLE_PREFIX = os.environ.get('ROLE_PREFIX', 'ROLE_FONCIER_')
 DEBUG = os.environ.get('DEBUG', 'False')
-logger = logging.getLogger('worker')
+logger = logging.getLogger('app')
 
 
 @app.before_request
