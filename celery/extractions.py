@@ -181,7 +181,8 @@ def do(year, format, proj, email, cities):
     # process request
     uuid = do.request.id
     extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
-    sendmail(email, "Le traitement a commencé")
+    sendmail(email, "Le traitement a commencé. Vous pouvez suivre son traitement à cette adresse : %s/retrieve/%s"
+             % (BASE_URL, uuid))
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     logger.info('Created temp dir %s' % tmpdir)
 
