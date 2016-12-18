@@ -1,99 +1,104 @@
-# Flask Main Application
-app:
-  build: .
-  environment:
-    - UWSGI_ENABLE_THREADS=1
-    - UWSGI_SINGLE_INTERPRETER=1
-    - UWSGI_PROCESSES=3
-    - UWSGI_THREADS=2
-    - UWSGI_MASTER=1
-    - CELERY_BROKER_URL=redis://redis:6379/0
-    - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    - LDAP_URI=ldap://ldap:389
-    - LDAP_BINDDN=cn=admin,dc=georchestra,dc=org
-    - LDAP_PASSWD=secret
-    - LDAP_ORGS_BASEDN=ou=orgs,dc=georchestra,dc=org
-    - LDAP_SEARCH_FILTER=(&(cn=%s)(objectClass=groupOfMembers))
-    - DEBUG=False
-  volumes:
-    - foncier_extracts:/extracts:ro
-  links:
-    - ldap
-    - redis
+version: '2'
+
+volumes:
+  foncier_extracts:
+  foncier_staticfiles:
+  ldap_data:
+  ldap_config:
+  redis_data:
+  foncier_pg_data:
 
 
-# Worker
-worker:
-  build: celery
-  environment:
-    - CELERY_BROKER_URL=redis://redis:6379/0
-    - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
-    - LOCAL_SMTP_HOST=smtp
-    - PROCESS_TIMEOUT=3600
-    - FONCIER_EXTRACTS_RETENTION_DAYS=1
-  volumes:
-    - foncier_staticfiles:/static
-    - foncier_extracts:/extracts
-  links:
-    - redis
-    - database
-    - smtp
+services:
+  # Flask Main Application
+  app:
+    build: .
+    image: ppigenpdc/foncier-app
+    environment:
+      - UWSGI_ENABLE_THREADS=1
+      - UWSGI_SINGLE_INTERPRETER=1
+      - UWSGI_PROCESSES=3
+      - UWSGI_THREADS=2
+      - UWSGI_MASTER=1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - LDAP_URI=ldap://ldap:389
+      - LDAP_BINDDN=cn=admin,dc=georchestra,dc=org
+      - LDAP_PASSWD=secret
+      - LDAP_ORGS_BASEDN=ou=orgs,dc=georchestra,dc=org
+      - LDAP_SEARCH_FILTER=(&(cn=%s)(objectClass=groupOfMembers))
+      - DEBUG=False
+    volumes:
+      - foncier_extracts:/extracts:ro
 
 
-# Proxy
-nginx:
-  image: nginx
-  ports:
-    - "8080:80"
-  volumes:
-    - ./resources/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-  links:
-    - app
+  # Worker
+  worker:
+    build: celery
+    image: ppigenpdc/foncier-worker
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
+      - LOCAL_SMTP_HOST=smtp
+      - PROCESS_TIMEOUT=3600
+      - FONCIER_EXTRACTS_RETENTION_DAYS=1
+    volumes:
+      - foncier_staticfiles:/static
+      - foncier_extracts:/extracts
 
 
-# sample geOrchestra LDAP
-ldap:
-  image: georchestra/ldap
-  environment:
-    - SLAPD_ORGANISATION=georchestra
-    - SLAPD_DOMAIN=georchestra.org
-    - SLAPD_PASSWORD=secret
-    - SLAPD_ADDITIONAL_MODULES=groupofmembers
-  volumes:
-    - ldap_data:/var/lib/ldap
-    - ldap_config:/etc/ldap
-  ports:
-    - "3899:389"
+  # Proxy
+  nginx:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./resources/nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
 
-# Message broker
-redis:
-  image: redis:3.2
-  volumes:
-    - redis_data:/data
+  # sample geOrchestra LDAP
+  ldap:
+    image: georchestra/ldap
+    environment:
+      - SLAPD_ORGANISATION=georchestra
+      - SLAPD_DOMAIN=georchestra.org
+      - SLAPD_PASSWORD=secret
+      - SLAPD_ADDITIONAL_MODULES=groupofmembers
+    volumes:
+      - ldap_data:/var/lib/ldap
+      - ldap_config:/etc/ldap
+    ports:
+      - "3899:389"
 
 
-# Database with Foncier (geo)data
-database:
-  image: camptocamp/postgis:9.5
-  volumes:
-    - foncier_pg_data:/var/lib/postgresql/data
-  ports:
-    - "54322:5432"
-  environment:
-    POSTGRES_DB: geoserver
-    POSTGRES_PASSWORD: geoserver
-    POSTGRES_USER: geoserver
+  # Message broker
+  redis:
+    image: redis:3.2
+    volumes:
+      - redis_data:/data
 
 
-# SMTP
-smtp:
-  image: camptocamp/smtp-sink
+  # Database with Foncier (geo)data
+  database:
+    image: camptocamp/postgis:9.5
+    volumes:
+      - foncier_pg_data:/var/lib/postgresql/data
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_DB: geoserver
+      POSTGRES_PASSWORD: geoserver
+      POSTGRES_USER: geoserver
 
-webmail:
-  image: camptocamp/sqwebmail
-  ports:
-    - "8081:80"
-  volumes_from:
-    - smtp:rw
+
+  # SMTP
+  smtp:
+    image: camptocamp/smtp-sink
+
+  webmail:
+    image: camptocamp/sqwebmail
+    ports:
+      - "8081:80"
+    volumes_from:
+      - smtp:rw
