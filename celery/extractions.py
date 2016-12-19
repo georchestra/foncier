@@ -165,6 +165,8 @@ def do(year, format, proj, email, cities):
     # clean older files
     now = time.time()
     for f in os.listdir(FONCIER_EXTRACTS_DIR):
+        if not f.startswith('foncier_'):
+            continue
         file = join(FONCIER_EXTRACTS_DIR, f)
         try:
             creation = os.path.getctime(file)
