@@ -16,6 +16,17 @@ docker-compose up
 ```
 Puis RDV sur [http://localhost:8080/](http://localhost:8080/)
 
+Notez que le navigateur doit envoyer les headers suivants afin de simuler un proxy de sécurité geOrchestra:
+ * sec-username = mon_login
+ * sec-roles = ROLE_FONCIER_2014;ROLE_FONCIER_2013;ROLE_FONCIER_2012;ROLE_FONCIER_2011;ROLE_FONCIER_2009
+ * sec-org = psc
+ * sec-orgname = PSC geOrchestra
+ * sec-firstname = mon_prenom
+ * sec-lastname = mon_nom
+ * sec-email = my_valid_email@provider.com
+
+Cela peut se faire en utilisant par exemple une extension comme "[modheader](https://chrome.google.com/webstore/detail/modheader/idgpnmonknjnojddfkpgkljpfnnfcklj?hl=en)"
+
 ## Utilisation
 
 Si la requête entrante est munie d'un header `sec-roles` composé d'une suite de chaînes de caractères du type `ROLE_FONCIER_XXXX`, séparées par des points virgules (eg: `sec-roles = ROLE_FONCIER_2009;ROLE_FONCIER_2011`) alors la page d'accueil présente un formulaire d'extraction permettant de choisir un millésime à extraire (à choisir parmi les années composant `sec-roles`).
