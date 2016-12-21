@@ -13,7 +13,7 @@ from distutils.dir_util import copy_tree
 import psycopg2
 from subprocess import Popen, PIPE
 from os import remove, listdir
-from os.path import isfile, join
+from os.path import join
 
 
 logger = logging.getLogger('worker')
@@ -187,6 +187,7 @@ def do(year, format, proj, email, cities):
              % (BASE_URL, uuid))
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     logger.info('Created temp dir %s' % tmpdir)
+    datadir = join(tmpdir, 'data')
 
     # format cities parameter it's stored as string in database
     cities = ["'%s'" % c for c in cities]
@@ -200,11 +201,11 @@ def do(year, format, proj, email, cities):
     # launch extraction
     with psycopg2.connect(PG_CONNECT_STRING) as conn:
         if format == "shp":
-            export_schema_to_shapefile_or_mapinfo(year, proj, cities, tmpdir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
+            export_schema_to_shapefile_or_mapinfo(year, proj, cities, datadir, "ESRI Shapefile", conn, PG_CONNECT_STRING)
         elif format == "mifmid":
-            export_schema_to_shapefile_or_mapinfo(year, proj, cities, tmpdir, "MapInfo File", conn, PG_CONNECT_STRING)
+            export_schema_to_shapefile_or_mapinfo(year, proj, cities, datadir, "MapInfo File", conn, PG_CONNECT_STRING)
         elif format == "postgis":
-            export_schema_to_sql(year, proj, cities, tmpdir, conn, PG_CONNECT_STRING)
+            export_schema_to_sql(year, proj, cities, datadir, conn, PG_CONNECT_STRING)
         else:
             raise Exception("Invalid format: %s" % format)
 
@@ -212,8 +213,10 @@ def do(year, format, proj, email, cities):
     try:
         zip_name = join(FONCIER_EXTRACTS_DIR, "%s.zip" % extraction_id)
         with ZipFile(zip_name, 'w') as myzip:
-            for file in [f for f in listdir(tmpdir) if isfile(join(tmpdir, f))]:
-                myzip.write(join(tmpdir, file), arcname=join(extraction_id, file))
+            for root, dirs, files in os.walk(tmpdir):
+                for file in files:
+                    myzip.write(join(root, file), arcname=join(extraction_id, root[len(FONCIER_EXTRACTS_DIR)+1:], file))
+
     except IOError as e:
         logger.error('IOError while zipping %s' % tmpdir)
 
