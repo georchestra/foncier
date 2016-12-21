@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import tempfile
 import shutil
 import logging
@@ -14,7 +13,7 @@ from distutils.dir_util import copy_tree
 import psycopg2
 from subprocess import Popen, PIPE
 from os import remove, listdir
-from os.path import join
+from os.path import join, isfile
 
 
 logger = logging.getLogger('worker')
@@ -166,20 +165,19 @@ def do(year, format, proj, email, cities):
     # clean older files
     now = time.time()
     for f in os.listdir(FONCIER_EXTRACTS_DIR):
-        if not f.startswith('foncier_'):
-            continue
         file = join(FONCIER_EXTRACTS_DIR, f)
+        if not f.startswith('foncier_') or not isfile(file):
+            continue
         try:
             creation = os.path.getctime(file)
-            # might throw FileNotFoundError if another worker does the same
         except Exception:
-            sys.exc_clear()
+            pass
         if (now - creation) // (24 * 3600) >= FONCIER_EXTRACTS_RETENTION_DAYS:
             try:
                 os.unlink(file)
-                logger.info('Removed file %s because it was older than %s days' % (f, FONCIER_EXTRACTS_RETENTION_DAYS))
+                logger.info('Removed file %s because it was older than %s day(s)' % (f, FONCIER_EXTRACTS_RETENTION_DAYS))
             except Exception:
-                sys.exc_clear()
+                pass
 
     # process request
     uuid = do.request.id
