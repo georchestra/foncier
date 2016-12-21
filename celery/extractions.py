@@ -215,7 +215,7 @@ def do(year, format, proj, email, cities):
         with ZipFile(zip_name, 'w') as myzip:
             for root, dirs, files in os.walk(tmpdir):
                 for file in files:
-                    myzip.write(join(root, file), arcname=join(extraction_id, root[len(FONCIER_EXTRACTS_DIR)+1:], file))
+                    myzip.write(join(root, file), arcname=join(root[len(FONCIER_EXTRACTS_DIR)+1:], file))
 
     except IOError as e:
         logger.error('IOError while zipping %s' % tmpdir)
