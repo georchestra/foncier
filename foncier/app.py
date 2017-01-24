@@ -84,10 +84,12 @@ def retrieve(uuid):
                     break
                 yield data
     if res.state == states.SUCCESS:
+        filepath = str(res.result)
         headers = Headers()
         headers.add('Content-Type', 'application/zip')
         headers.add('Content-Disposition', 'attachment', filename='%s.zip' % uuid)
-        return Response(generate(str(res.result)), headers=headers)
+        headers.add('Content-Length', str(os.path.getsize(filepath)))
+        return Response(generate(filepath), headers=headers)
     elif res.state == states.STARTED:
         return render_template('started.html', uuid=uuid)
     elif res.state == states.FAILURE:
