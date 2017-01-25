@@ -1,4 +1,4 @@
-FROM python:3.4
+FROM debian:stretch
 
 MAINTAINER François Van Der Biest "francois.vanderbiest@camptocamp.com"
 
@@ -9,13 +9,19 @@ RUN apt-get update && \
         python3-all-dev \
         libldap2-dev \
         libsasl2-dev \
+        uwsgi \
+        python3-pip \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y uwsgi uwsgi-plugin-python3 \
     && \
     rm -rf /var/lib/apt/lists/*
 
 COPY resources /
 
-RUN pip install -r /requirements.txt
-RUN pip install uwsgi 
+RUN pip3 install -r /requirements.txt
 
 COPY foncier /app
 
@@ -33,4 +39,4 @@ VOLUME ["/extracts"]
 USER www
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["uwsgi", "--http", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app", "--uid", "www"]
+CMD ["uwsgi", "--plugin", "python3,http,router_static", "--http-socket", "0.0.0.0:5000", "--callable", "app", "--module", "app", "--chdir", "/app", "--uid", "www"]

@@ -14,12 +14,19 @@ services:
   app:
     build: .
     image: ppigenpdc/foncier-app
+    ports:
+      - "5000:5000"
     environment:
       - UWSGI_ENABLE_THREADS=1
       - UWSGI_SINGLE_INTERPRETER=1
       - UWSGI_PROCESSES=3
       - UWSGI_THREADS=2
       - UWSGI_MASTER=1
+      - UWSGI_PLUGINS=router_static
+      - UWSGI_OFFLOAD_THREADS=2
+      - UWSGI_STATIC_SAFE=/extracts
+      - UWSGI_COLLECT_HEADER=X-Sendfile X_SENDFILE
+      - UWSGI_RESPONSE_ROUTE_IF_NOT=empty:$${X_SENDFILE} static:$${X_SENDFILE}
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - LDAP_URI=ldap://ldap:389
@@ -41,6 +48,9 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
       - LOCAL_SMTP_HOST=smtp
+      - BASE_URL=http://localhost:8080/
+      - MAIL_FROM=foncier@ppige.com
+      - MAIL_SUBJECT=Extraction
       - PROCESS_TIMEOUT=3600
       - FONCIER_EXTRACTS_RETENTION_DAYS=1
     volumes:
