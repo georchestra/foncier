@@ -12,6 +12,7 @@ Pour fonctionner, l'application nécessite:
 
 Dans un contexte docker:
 ```
+make docker-build
 docker-compose up
 ```
 Puis RDV sur [http://localhost:8080/](http://localhost:8080/)
