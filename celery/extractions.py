@@ -182,7 +182,7 @@ def do(year, format, proj, email, cities):
     # process request
     uuid = do.request.id
     extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
-    sendmail(email, "Le traitement a commencé. Vous pouvez suivre son traitement à cette adresse : %s/retrieve/%s"
+    sendmail(email, "Le traitement a commencé. Vous pouvez suivre son traitement à cette adresse : %s/retrieve/%s?login"
              % (BASE_URL, uuid))
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     logger.info('Created temp dir %s' % tmpdir)
@@ -223,7 +223,7 @@ def do(year, format, proj, email, cities):
     shutil.rmtree(tmpdir)
     logger.info('Removed dir %s' % tmpdir)
     # send email with a link to download the generated archive:
-    sendmail(email, 'Extraction terminée : %s/retrieve/%s' % (BASE_URL, uuid))
+    sendmail(email, 'Extraction terminée : %s/retrieve/%s?login' % (BASE_URL, uuid))
     # return zip file name
     return zip_name
 
