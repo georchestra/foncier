@@ -20,6 +20,7 @@ services:
       - UWSGI_PROCESSES=3
       - UWSGI_THREADS=2
       - UWSGI_MASTER=1
+      - UWSGI_SOCKET_TIMEOUT=2400
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - LDAP_URI=ldap://ldap:389
