@@ -1,7 +1,11 @@
 docker-build:
-	docker pull python:3.4
-	docker pull debian:stretch
-	docker-compose build
+	TAG=$$(date +%Y%m%d%H%M%S) ;\
+	docker pull python:3.4 ; \
+	docker pull debian:stretch ; \
+	docker build -t ppigenpdc/foncier-app:$$TAG . ; \
+	docker build -t ppigenpdc/foncier-app:latest . ; \
+	docker build -t ppigenpdc/foncier-worker:$$TAG celery ; \
+	docker build -t ppigenpdc/foncier-worker:latest celery ; \
 
 docker-stop-rm:
 	docker-compose stop
