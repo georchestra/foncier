@@ -42,7 +42,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - PG_CONNECT_STRING=host=database port=5432 user=geoserver dbname=geoserver password=geoserver
       - LOCAL_SMTP_HOST=smtp
-      - PROCESS_TIMEOUT=3600
+      - PROCESS_TIMEOUT=7200
       - FONCIER_EXTRACTS_RETENTION_DAYS=1
     volumes:
       - foncier_staticfiles:/static:ro
