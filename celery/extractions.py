@@ -29,7 +29,7 @@ SMTP_HOST = env.get('LOCAL_SMTP_HOST', 'localhost')
 SMTP_PORT = env.get('LOCAL_SMTP_PORT', 25)
 
 MAIL_FROM = env.get('MAIL_FROM', 'ppige@epf-npdc.fr')
-MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[PPIGE - Foncier] Votre extraction')
+MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[PPIGE - Fichiers fonciers] Votre extraction')
 
 BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
 
@@ -182,7 +182,7 @@ def do(year, format, proj, email, cities):
     # process request
     uuid = do.request.id
     extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
-    sendmail(email, "Le traitement a commencé. Vous pouvez suivre son traitement à cette adresse : %s/retrieve/%s?login"
+    sendmail(email, "Bonjour,\n\nL'extraction de vos fichiers fonciers a commencée. Vous pouvez suivre son cours à cette adresse : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE"
              % (BASE_URL, uuid))
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     logger.info('Created temp dir %s' % tmpdir)
@@ -223,7 +223,7 @@ def do(year, format, proj, email, cities):
     shutil.rmtree(tmpdir)
     logger.info('Removed dir %s' % tmpdir)
     # send email with a link to download the generated archive:
-    sendmail(email, 'Extraction terminée : %s/retrieve/%s?login' % (BASE_URL, uuid))
+    sendmail(email, "Bonjour,\n\nVotre extraction est terminée. Vous pouvez la télécharger à l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE" % (BASE_URL, uuid))
     # return zip file name
     return zip_name
 
