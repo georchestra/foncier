@@ -9,7 +9,7 @@
     <body>
         <iframe src="/portail/external_head" style="width:100%;height:73px;border:none;overflow:hidden;" scrolling="no" frameborder="0"></iframe>
         <div class="main">
-            <h1>Extracteur des fichiers fonciers</h1>
+            <h1>Extracteur des fichiers fonciers</h1><hr>
 
             <p>Bonjour {{ g.firstname }} {{ g.lastname }},</p>
             <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(years) }}.<br/>Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme ({{ g.orgname }}).</p>
