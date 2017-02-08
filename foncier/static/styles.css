@@ -27,3 +27,13 @@ fieldset {
     background-color: white;
     width: 50%;
 }
+
+h1 {
+	color: #0070C0;
+	margin-bottom: 0;
+}
+
+hr {
+	border-color: #0070C0;
+	margin-bottom: 2em;
+}
