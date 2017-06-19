@@ -30,6 +30,8 @@ SMTP_PORT = env.get('LOCAL_SMTP_PORT', 25)
 
 MAIL_FROM = env.get('MAIL_FROM', 'ppige@epf-npdc.fr')
 MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[PPIGE - Fichiers fonciers] Votre extraction')
+MAIL_ACK_BODY = env.get('MAIL_ACK_BODY', "Bonjour,\n\nL'extraction de vos fichiers fonciers a commencé. Vous pouvez suivre son cours à l'adresse : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE")
+MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est terminée. Vous pouvez la télécharger à l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE")
 
 BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
 
@@ -182,8 +184,7 @@ def do(year, format, proj, email, cities):
     # process request
     uuid = do.request.id
     extraction_id = 'foncier_{0}_{1}_{2}_{3}'.format(year, format, proj, uuid)
-    sendmail(email, "Bonjour,\n\nL'extraction de vos fichiers fonciers a commencée. Vous pouvez suivre son cours à cette adresse : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE"
-             % (BASE_URL, uuid))
+    sendmail(email, MAIL_ACK_BODY % (BASE_URL, uuid))
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     logger.info('Created temp dir %s' % tmpdir)
     datadir = join(tmpdir, 'data')
@@ -223,7 +224,7 @@ def do(year, format, proj, email, cities):
     shutil.rmtree(tmpdir)
     logger.info('Removed dir %s' % tmpdir)
     # send email with a link to download the generated archive:
-    sendmail(email, "Bonjour,\n\nVotre extraction est terminée. Vous pouvez la télécharger à l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE" % (BASE_URL, uuid))
+    sendmail(email, MAIL_END_BODY % (BASE_URL, uuid))
     # return zip file name
     return zip_name
 
