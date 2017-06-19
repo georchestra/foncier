@@ -11,11 +11,11 @@ import logging
 
 # create the app:
 app = Flask(__name__)
-
-ROLE_PREFIX = os.environ.get('ROLE_PREFIX', 'ROLE_FONCIER_')
-DEBUG = os.environ.get('DEBUG', 'False')
 logger = logging.getLogger('app')
 
+env=os.environ
+DEBUG = env.get('DEBUG', 'False')
+ROLE_PREFIX = env.get('ROLE_PREFIX', 'ROLE_FONCIER_')
 SORRY_PAGE_BODY = env.get('SORRY_PAGE_BODY', "<p>Cette application est réservée aux ayants droits PPIGE <a href='?login'>connectés</a> ayant signé un <a href='http://www.ppige-npdc.fr/portail/doc/Acte_Engagementdynamique2015_vF_cle6ca269.pdf'>acte d'engagement</a> en vue de la délivrance de fichiers fonciers.</p><p>Il semblerait que cette condition ne soit pas remplie pour votre compte, ou bien que le traitement de votre demande ne soit pas encore achevé.</p><p>Pour obtenir un accès à ces fichiers, vous devez obtenir l’autorisation de la Direction Générale de l'Aménagement, du Logement et de la Nature (DGALN). La procédure ci-dessous vous accompagne dans cette démarche.</p><p>Envoyer votre demande à la DGALN par un email remplissant les conditions suivantes :<ol><li>Objet du message : <b>[PPIGE] Demande de téléchargement de fichiers fonciers à partir du site de la PPIGE</b></li><li>Destinataire principal : <b>autorisations-fichiers-fonciers@developpement-durable.gouv.fr</b> </li><li>Destinataires en copie : <b>fichiers-fonciers@developpement-durable.gouv.fr, ppige@epf-npdc.fr</b></li><li>Pièce jointe : le <a href='http://www.ppige-npdc.fr/portail/doc/Acte_Engagementdynamique2015_vF_cle6ca269.pdf'>document DGALN-AD</a> dûment rempli. </li></ol></p><p>Votre demande sera traitée correctement et dans les plus brefs délais si vous respectez ces étapes.</p><p>Votre accès à l'extracteur des fichiers fonciers sera ouvert par la PPIGE dès réception de la validation de la DGALN.</p><p>Nous vous invitons à consulter également le document <a href='http://www.ppige-npdc.fr/portail/doc/AE-DGFIP-DGALN.pdf'>AE-DGFiP-DGALN</a></p>")
 
 @app.before_request
