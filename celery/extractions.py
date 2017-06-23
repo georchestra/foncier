@@ -28,10 +28,10 @@ CELERY_RESULT_BACKEND = env.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379
 SMTP_HOST = env.get('LOCAL_SMTP_HOST', 'localhost')
 SMTP_PORT = env.get('LOCAL_SMTP_PORT', 25)
 
-MAIL_FROM = env.get('MAIL_FROM', 'ppige@epf-npdc.fr')
-MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[PPIGE - Fichiers fonciers] Votre extraction')
-MAIL_ACK_BODY = env.get('MAIL_ACK_BODY', "Bonjour,\n\nL'extraction de vos fichiers fonciers a commencé. Vous pouvez suivre son cours à l'adresse : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE")
-MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est terminée. Vous pouvez la télécharger à l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement,\nL'équipe PPIGE")
+MAIL_FROM = env.get('MAIL_FROM', 'contact@provider.com')
+MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[Foncier] Votre extraction')
+MAIL_ACK_BODY = env.get('MAIL_ACK_BODY', "Bonjour,\n\nL'extraction de vos fichiers fonciers a commencé. Vous pouvez suivre son cours à l'adresse : %s/retrieve/%s?login\n\nBien cordialement")
+MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est terminée. Vous pouvez la télécharger à l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement")
 
 BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
 

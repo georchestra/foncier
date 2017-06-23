@@ -19,9 +19,6 @@ def acces_foncier(roles):
 
 
 def extract_cp(org):
-    if not org:
-        return []
-
     cnx = Connection(LDAP_URI, LDAP_BINDDN, LDAP_PASSWD, auto_bind=True)
 
     cnx.search(search_base=LDAP_ORGS_BASEDN,
