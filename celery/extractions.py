@@ -8,6 +8,7 @@ import time
 from zipfile import ZipFile
 from smtplib import SMTP, SMTPException
 from email.mime.text import MIMEText
+import quopri
 from celery import Celery
 from distutils.dir_util import copy_tree
 import psycopg2
@@ -30,8 +31,8 @@ SMTP_PORT = env.get('LOCAL_SMTP_PORT', 25)
 
 MAIL_FROM = env.get('MAIL_FROM', 'contact@provider.com')
 MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[Foncier] Votre extraction')
-MAIL_ACK_BODY = env.get('MAIL_ACK_BODY', "Bonjour,\n\nL'extraction de vos fichiers fonciers a commencé. Vous pouvez suivre son cours à l'adresse : %s/retrieve/%s?login\n\nBien cordialement")
-MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est terminée. Vous pouvez la télécharger à l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement")
+MAIL_ACK_BODY = env.get('MAIL_ACK_BODY', "Bonjour,\n\nL'extraction de vos fichiers fonciers a commenc=C3=A9. Vous pouvez suivre s=\non cours =C3=A0 l'adresse : %s/retrieve/%s?login\n\nBien cordialement")
+MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est termin=C3=A9e. Vous pouvez la t=C3=A9l=C3=A9charger =\n=C3=A0 l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement")
 
 BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
 
@@ -148,7 +149,7 @@ def export_schema_to_sql(year, proj, cities, output_dir, conn, pg_connect_string
 
 
 def sendmail(to, message):
-    msg = MIMEText(message.encode('utf-8'), _charset='utf-8')
+    msg = MIMEText(quopri.decodestring(message), _charset='utf-8')
     msg['Subject'] = MAIL_SUBJECT
     msg['From'] = MAIL_FROM
     msg['To'] = to
