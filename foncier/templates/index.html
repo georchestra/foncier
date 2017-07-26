@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('.static', filename='styles.css') }}">
         <title>Extracteur des fichiers fonciers</title>
     </head>
 
@@ -14,7 +14,7 @@
             <p>Bonjour {{ g.firstname }} {{ g.lastname }},</p>
             <p>D'après nos registres, vous avez accès aux millésimes {{ ', '.join(years) }}.<br/>Notez que l'extraction portera sur les {{ g.cities|length }} communes enregistrées comme zone de compétence de votre organisme ({{ g.orgname }}).</p>
 
-            <form action="{{ url_for('submit') }}" method="POST">
+            <form action="{{ url_for('.submit') }}" method="POST">
                 <fieldset>
                     <legend>Paramètres de l'extraction</legend>
                     <b>Millésime</b> :<br>

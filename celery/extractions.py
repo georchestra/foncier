@@ -34,7 +34,7 @@ MAIL_SUBJECT = env.get('MAIL_SUBJECT', '[Foncier] Votre extraction')
 MAIL_ACK_BODY = env.get('MAIL_ACK_BODY', "Bonjour,\n\nL'extraction de vos fichiers fonciers a commenc=C3=A9. Vous pouvez suivre s=\non cours =C3=A0 l'adresse : %s/retrieve/%s?login\n\nBien cordialement")
 MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est termin=C3=A9e. Vous pouvez la t=C3=A9l=C3=A9charger =\n=C3=A0 l'adresse suivante : %s/retrieve/%s?login\n\nBien cordialement")
 
-BASE_URL = env.get('BASE_URL', 'http://localhost:8080')
+BASE_URL = env.get('BASE_URL', 'http://localhost:8080/foncier')
 
 FONCIER_EXTRACTS_DIR = env.get('FONCIER_EXTRACTS_DIR', '/tmp')
 FONCIER_EXTRACTS_RETENTION_DAYS = int(env.get('FONCIER_EXTRACTS_RETENTION_DAYS', 1))

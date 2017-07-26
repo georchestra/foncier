@@ -15,7 +15,7 @@ Dans un contexte docker:
 make docker-build
 docker-compose up
 ```
-Puis RDV sur [http://localhost:8080/](http://localhost:8080/)
+Puis RDV sur [http://localhost:8080/foncier/](http://localhost:8080/foncier/)
 
 Notez que le navigateur doit envoyer les headers suivants afin de simuler un proxy de sécurité geOrchestra:
  * sec-username = mon_login
