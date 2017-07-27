@@ -189,10 +189,12 @@ def do(year, format, proj, email, cities):
     tmpdir = tempfile.mkdtemp(dir=FONCIER_EXTRACTS_DIR, prefix="%s-" % extraction_id)
     logger.info('Created temp dir %s' % tmpdir)
     datadir = join(tmpdir, 'data')
+    os.makedirs(datadir)
 
     # format cities parameter it's stored as string in database
     cities = ["'%s'" % c for c in cities]
 
+    # copy static files to every archive we create:
     if (FONCIER_STATIC_DIR is not None):
         try:
             copy_tree(FONCIER_STATIC_DIR, tmpdir)
