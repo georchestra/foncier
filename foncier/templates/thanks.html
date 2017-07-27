@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="static/styles.css">
+        <link rel="stylesheet" href="{{ url_for('.static', filename='styles.css') }}">
         <title>Extracteur des fichiers fonciers</title>
     </head>
 
@@ -17,7 +17,7 @@
             
             <p><br></p>
 
-            <!--p>Adresse de suivi : <a href="retrieve/{{ uuid }}">retrieve/{{ uuid }}</a></p-->
+            <!--p>Adresse de suivi : <a href="{{ url_for('.retrieve', uuid=uuid) }}">{{ url_for('.retrieve', uuid=uuid) }}</a></p-->
         </div>
     </body>
 </html>

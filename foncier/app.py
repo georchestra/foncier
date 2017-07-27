@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, Markup, render_template, request, Response, g
+from flask import Flask, Markup, Blueprint, render_template, request, Response, g
 from werkzeug.datastructures import Headers
 from utils import acces_foncier, extract_cp
 from rights_decorator import rights_required
@@ -9,8 +9,7 @@ import celery.states as states
 import os
 import logging
 
-# create the app:
-app = Flask(__name__)
+bp = Blueprint('foncier', __name__, template_folder='templates', static_folder='static')
 logger = logging.getLogger('app')
 
 env=os.environ
@@ -20,7 +19,8 @@ HEADER_HEIGHT = env.get('HEADER_HEIGHT', 90)
 HEADER_URL = env.get('HEADER_URL', '/header/')
 SORRY_PAGE_BODY = Markup(env.get('SORRY_PAGE_BODY', "<p>Cette application est réservée aux ayants droits <a href='?login'>connectés</a> ayant signé un acte d'engagement en vue de la délivrance de fichiers fonciers.</p>"))
 
-@app.before_request
+
+@bp.before_request
 def load_user():
     # store username during request treatment
     g.username = request.headers.get('sec-username')
@@ -44,7 +44,7 @@ def load_user():
     g.years = sorted([int(r[len(prefix):]) for r in g.roles if r.startswith(prefix)])
 
 
-@app.route('/', methods=['GET'])
+@bp.route('/', methods=['GET'])
 def index():
     if acces_foncier(g.roles) and len(g.cities) > 0:
         return render_template('index.html', years=[str(y) for y in g.years], hheight=HEADER_HEIGHT, hurl=HEADER_URL)
@@ -52,7 +52,7 @@ def index():
         return render_template('sorry.html', body=SORRY_PAGE_BODY, hheight=HEADER_HEIGHT, hurl=HEADER_URL)
 
 
-@app.route('/submit', methods=['POST'])
+@bp.route('/submit', methods=['POST'])
 @rights_required
 def submit():
     values = request.form
@@ -74,7 +74,7 @@ def submit():
     return render_template('thanks.html', values=values, uuid=task.id, hheight=HEADER_HEIGHT, hurl=HEADER_URL)
 
 
-@app.route('/retrieve/<string:uuid>', methods=['GET'])
+@bp.route('/retrieve/<string:uuid>', methods=['GET'])
 @rights_required
 def retrieve(uuid):
     res = taskmanager.AsyncResult(uuid)
@@ -99,6 +99,11 @@ def retrieve(uuid):
         return render_template('failure.html', error=res.result)
     else: # PENDING and other states (include unknown UUID)
         return render_template('pending.html', uuid=uuid)
+
+# create the app:
+app = Flask(__name__)
+app.register_blueprint(bp, url_prefix='/foncier')
+
 
 if __name__ == '__main__':
     app.run(debug=DEBUG=="True")
