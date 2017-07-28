@@ -8,6 +8,7 @@ import time
 from zipfile import ZipFile
 from smtplib import SMTP, SMTPException
 from email.mime.text import MIMEText
+from email.header import Header
 import quopri
 from celery import Celery
 from distutils.dir_util import copy_tree
@@ -149,8 +150,9 @@ def export_schema_to_sql(year, proj, cities, output_dir, conn, pg_connect_string
 
 
 def sendmail(to, message):
-    msg = MIMEText(quopri.decodestring(message), _charset='utf-8')
-    msg['Subject'] = MAIL_SUBJECT
+    mail_charset = 'utf-8'
+    msg = MIMEText(quopri.decodestring(message), _charset=mail_charset)
+    msg['Subject'] = Header(MAIL_SUBJECT, mail_charset)
     msg['From'] = MAIL_FROM
     msg['To'] = to
     try:

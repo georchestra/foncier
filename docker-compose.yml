@@ -47,6 +47,8 @@ services:
       - LOCAL_SMTP_HOST=smtp
       - PROCESS_TIMEOUT=7200
       - FONCIER_EXTRACTS_RETENTION_DAYS=1
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
     volumes:
       - foncier_staticfiles:/static:ro
       - foncier_extracts:/extracts
@@ -106,5 +108,12 @@ services:
     image: camptocamp/sqwebmail
     ports:
       - "8081:80"
+    volumes_from:
+      - smtp:rw
+
+  courier-imap:
+    image: camptocamp/courier-imap
+    ports:
+      - "143:143"
     volumes_from:
       - smtp:rw
