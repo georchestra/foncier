@@ -47,8 +47,6 @@ services:
       - LOCAL_SMTP_HOST=smtp
       - PROCESS_TIMEOUT=7200
       - FONCIER_EXTRACTS_RETENTION_DAYS=1
-      - LC_ALL=C.UTF-8
-      - LANG=C.UTF-8
     volumes:
       - foncier_staticfiles:/static:ro
       - foncier_extracts:/extracts

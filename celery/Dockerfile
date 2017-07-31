@@ -2,6 +2,8 @@ FROM debian:stretch
 
 MAINTAINER François Van Der Biest "francois.vanderbiest@camptocamp.com"
 
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 ENV C_FORCE_ROOT true
 ENV FONCIER_EXTRACTS_DIR "/extracts"
 ENV FONCIER_STATIC_DIR "/static"
