@@ -108,3 +108,10 @@ services:
       - "8081:80"
     volumes_from:
       - smtp:rw
+
+  courier-imap:
+    image: camptocamp/courier-imap
+    ports:
+      - "143:143"
+    volumes_from:
+      - smtp:rw
