@@ -17,6 +17,9 @@ COPY resources /
 RUN pip install -r /requirements.txt
 RUN pip install uwsgi 
 
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 COPY foncier /app
 
 EXPOSE 5000
