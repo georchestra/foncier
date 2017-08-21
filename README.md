@@ -35,3 +35,9 @@ Si la requête entrante est munie d'un header `sec-roles` composé d'une suite d
 Si de plus, la requête est munie d'un header `sec-org` égalant le `cn` d'un organisme du LDAP (ex: `sec-org = psc`), alors l'extraction est autorisée sur l'ensemble des communes de codes INSEE renseignés dans le champ `description` du dit organisme.
 
 Dans le cas contraire, la réponse de l'application est une page indiquant les modalités d'accès aux fichiers fonciers.
+
+## License
+
+Licensed under the EUPL V.1.1.
+
+For full details, see [LICENSE.md](LICENSE.md).
