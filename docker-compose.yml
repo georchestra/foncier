@@ -103,11 +103,14 @@ services:
     image: camptocamp/smtp-sink
 
   webmail:
-    image: camptocamp/sqwebmail
+    image: camptocamp/roundcube
     ports:
       - "8081:80"
     volumes_from:
       - smtp:rw
+    environment:
+      - IMAP_HOSTNAME=courier-imap
+      - SMTP_HOSTNAME=smtp
 
   courier-imap:
     image: camptocamp/courier-imap
