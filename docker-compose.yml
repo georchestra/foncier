@@ -31,6 +31,7 @@ services:
       - LDAP_PASSWD=secret
       - LDAP_ORGS_BASEDN=ou=orgs,dc=georchestra,dc=org
       - LDAP_SEARCH_FILTER=(&(cn=%s)(objectClass=groupOfMembers))
+      - FONCIER_EXTRACTS_DIR=/extracts
       - DEBUG=False
     volumes:
       - foncier_extracts:/extracts:ro
@@ -47,6 +48,7 @@ services:
       - LOCAL_SMTP_HOST=smtp
       - PROCESS_TIMEOUT=7200
       - FONCIER_EXTRACTS_RETENTION_DAYS=1
+      - FONCIER_EXTRACTS_DIR=/extracts
     volumes:
       - foncier_staticfiles:/static:ro
       - foncier_extracts:/extracts
