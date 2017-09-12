@@ -37,7 +37,7 @@ MAIL_END_BODY = env.get('MAIL_END_BODY', "Bonjour,\n\nVotre extraction est termi
 
 BASE_URL = env.get('BASE_URL', 'http://localhost:8080/foncier')
 
-FONCIER_EXTRACTS_DIR = env.get('FONCIER_EXTRACTS_DIR', '/tmp')
+FONCIER_EXTRACTS_DIR = env.get('FONCIER_EXTRACTS_DIR', '/extracts')
 FONCIER_EXTRACTS_RETENTION_DAYS = int(env.get('FONCIER_EXTRACTS_RETENTION_DAYS', 1))
 FONCIER_STATIC_DIR = env.get('FONCIER_STATIC_DIR')
 
@@ -216,7 +216,7 @@ def do(year, format, proj, email, cities):
 
     # create ZIP archive
     try:
-        zip_name = join(FONCIER_EXTRACTS_DIR, "%s.zip" % extraction_id)
+        zip_name = join(FONCIER_EXTRACTS_DIR, "foncier_%s.zip" % uuid)
         with ZipFile(zip_name, 'w') as myzip:
             for root, dirs, files in os.walk(tmpdir):
                 for file in files:
@@ -230,6 +230,6 @@ def do(year, format, proj, email, cities):
     logger.info('Removed dir %s' % tmpdir)
     # send email with a link to download the generated archive:
     sendmail(email, MAIL_END_BODY % (BASE_URL, uuid))
-    # return zip file name
-    return zip_name
+    # return uuid
+    return uuid
 

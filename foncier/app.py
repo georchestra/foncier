@@ -14,6 +14,7 @@ logger = logging.getLogger('app')
 
 env=os.environ
 DEBUG = env.get('DEBUG', 'False')
+FONCIER_EXTRACTS_DIR = env.get('FONCIER_EXTRACTS_DIR', '/extracts')
 ROLE_PREFIX = env.get('ROLE_PREFIX', 'ROLE_FONCIER_')
 HEADER_HEIGHT = env.get('HEADER_HEIGHT', 90)
 HEADER_URL = env.get('HEADER_URL', '/header/')
@@ -78,6 +79,10 @@ def submit():
 @rights_required
 def retrieve(uuid):
     res = taskmanager.AsyncResult(uuid)
+    filepath = os.path.join(FONCIER_EXTRACTS_DIR, "foncier_%s.zip" % uuid)
+
+    if (not os.path.isfile(filepath)):
+        return render_template('failure.html', error='le fichier demandé n\'existe pas (ou plus).')
 
     def generate(filepath):
         with open(filepath, 'rb') as f:
@@ -86,11 +91,11 @@ def retrieve(uuid):
                 if not data:
                     break
                 yield data
+
     if res.state == states.SUCCESS:
-        filepath = str(res.result)
         headers = Headers()
         headers.add('Content-Type', 'application/zip')
-        headers.add('Content-Disposition', 'attachment', filename='%s.zip' % uuid)
+        headers.add('Content-Disposition', 'attachment', filename='foncier_%s.zip' % uuid)
         headers.add('Content-Length', str(os.path.getsize(filepath)))
         return Response(generate(filepath), headers=headers)
     elif res.state == states.STARTED:
