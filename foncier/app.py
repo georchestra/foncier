@@ -81,9 +81,6 @@ def retrieve(uuid):
     res = taskmanager.AsyncResult(uuid)
     filepath = os.path.join(FONCIER_EXTRACTS_DIR, "foncier_%s.zip" % uuid)
 
-    if (not os.path.isfile(filepath)):
-        return render_template('failure.html', error='le fichier demandé n\'existe pas (ou plus).')
-
     def generate(filepath):
         with open(filepath, 'rb') as f:
             while True:
@@ -93,6 +90,8 @@ def retrieve(uuid):
                 yield data
 
     if res.state == states.SUCCESS:
+        if not os.path.isfile(filepath):
+            return render_template('failure.html', error='le fichier demandé n\'existe plus.')
         headers = Headers()
         headers.add('Content-Type', 'application/zip')
         headers.add('Content-Disposition', 'attachment', filename='foncier_%s.zip' % uuid)
