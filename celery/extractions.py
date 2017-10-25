@@ -216,7 +216,7 @@ def do(year, format, proj, email, cities):
 
     # create ZIP archive
     try:
-        zip_name = join(FONCIER_EXTRACTS_DIR, "foncier_%s.zip" % uuid)
+        zip_name = join(FONCIER_EXTRACTS_DIR, "_foncier_%s.zip" % uuid)
         with ZipFile(zip_name, 'w') as myzip:
             for root, dirs, files in os.walk(tmpdir):
                 for file in files:
@@ -228,6 +228,10 @@ def do(year, format, proj, email, cities):
     # delete directory after zipping:
     shutil.rmtree(tmpdir)
     logger.info('Removed dir %s' % tmpdir)
+
+    # rename file so it can be picked successfully by frontend:
+    os.rename("_foncier_%s.zip" % uuid, "foncier_%s.zip" % uuid)
+
     # send email with a link to download the generated archive:
     sendmail(email, MAIL_END_BODY % (BASE_URL, uuid))
     # return uuid

@@ -89,20 +89,20 @@ def retrieve(uuid):
                     break
                 yield data
 
-    if res.state == states.SUCCESS:
-        if not os.path.isfile(filepath):
-            return render_template('failure.html', error='le fichier demandé n\'existe plus.')
+    if os.path.isfile(filepath):
         headers = Headers()
         headers.add('Content-Type', 'application/zip')
         headers.add('Content-Disposition', 'attachment', filename='foncier_%s.zip' % uuid)
         headers.add('Content-Length', str(os.path.getsize(filepath)))
         return Response(generate(filepath), headers=headers)
-    elif res.state == states.STARTED:
+
+    if res.state == states.STARTED:
         return render_template('started.html', uuid=uuid)
-    elif res.state == states.FAILURE:
-        return render_template('failure.html', error=res.result)
-    else: # PENDING and other states (include unknown UUID)
+    elif res.state == states.PENDING:
         return render_template('pending.html', uuid=uuid)
+    else: # other states eg FAILURE (also includes unknown UUID)
+        return render_template('failure.html', error=res.result)
+
 
 # create the app:
 app = Flask(__name__)
