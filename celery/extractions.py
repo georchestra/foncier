@@ -230,7 +230,7 @@ def do(year, format, proj, email, cities):
     logger.info('Removed dir %s' % tmpdir)
 
     # rename file so it can be picked successfully by frontend:
-    os.rename("_foncier_%s.zip" % uuid, "foncier_%s.zip" % uuid)
+    os.rename(join(FONCIER_EXTRACTS_DIR, "_foncier_%s.zip") % uuid, join(FONCIER_EXTRACTS_DIR, "foncier_%s.zip" % uuid))
 
     # send email with a link to download the generated archive:
     sendmail(email, MAIL_END_BODY % (BASE_URL, uuid))
