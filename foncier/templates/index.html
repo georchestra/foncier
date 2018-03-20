@@ -19,7 +19,7 @@
                     <legend>Paramètres de l'extraction</legend>
                     <b>Millésime</b> :<br>
                     {% for year in g.years %}
-                    <input type="radio" name="year" value="{{ year }}" {{ 'checked' if year == g.years[0] }}> {{ year }}
+                    <input type="radio" name="year" value="{{ year }}" {{ 'checked' if year == g.years[0] }}>&nbsp;{{ year }}
                     {% endfor %}
                     <br><br>
                     <b>Projection</b> :<br>
