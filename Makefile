@@ -12,7 +12,7 @@ docker-build-push: docker-build-latest
 	docker push ppigenpdc/foncier-worker:latest ; \
 
 docker-pull-deps:
-	docker pull python:3.4 ; \
+	docker pull python:3.5 ; \
 	docker pull debian:stretch ; \
 
 docker-stop-rm:
