@@ -82,7 +82,7 @@ services:
 
   # Message broker
   redis:
-    image: redis:3.2
+    image: redis:5.0
     volumes:
       - redis_data:/data
 
