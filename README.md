@@ -1,4 +1,4 @@
-# Application d'extraction du Foncier pour la PPIGE
+# Application d'extraction du Foncier
 
 Cette application, bâtie pour fonctionner comme module de l'IDS [geOrchestra](https://github.com/georchestra/georchestra), permet à des utilisateurs authentifiés de commander des extraits de la base de données foncières.
 
@@ -15,7 +15,7 @@ Dans un contexte docker:
 make docker-build
 docker-compose up
 ```
-Puis RDV sur [http://localhost:8080/foncier/](http://localhost:8080/foncier/)
+Puis RDV sur [http://localhost:8080/foncier/](http://localhost:8080/foncier/), éventuellement en [chargeant des données de test](samples/README.md).
 
 Notez que le navigateur doit envoyer les headers suivants afin de simuler un proxy de sécurité geOrchestra:
  * sec-username = mon_login
