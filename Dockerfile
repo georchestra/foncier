@@ -1,4 +1,4 @@
-FROM python:3.4
+FROM python:3.5
 
 MAINTAINER François Van Der Biest "francois.vanderbiest@camptocamp.com"
 
@@ -15,7 +15,7 @@ RUN apt-get update && \
 COPY resources /
 
 RUN pip install -r /requirements.txt
-RUN pip install uwsgi 
+RUN pip install uwsgi
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
