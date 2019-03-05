@@ -13,7 +13,7 @@ services:
   # Flask Main Application
   app:
     build: .
-    image: ppigenpdc/foncier-app
+    image: georchestra/foncier-app
     ports:
       # debug:
       - "5000:5000"
@@ -40,7 +40,7 @@ services:
   # Worker
   worker:
     build: celery
-    image: ppigenpdc/foncier-worker
+    image: georchestra/foncier-worker
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
