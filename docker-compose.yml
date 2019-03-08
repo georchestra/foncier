@@ -89,9 +89,10 @@ services:
 
   # Database with Foncier (geo)data
   database:
-    image: camptocamp/postgis:9.5
+    image: camptocamp/postgres:9.6
     volumes:
       - foncier_pg_data:/var/lib/postgresql/data
+      - ./db/sql:/docker-entrypoint-initdb.d/
     ports:
       - "54322:5432"
     environment:
