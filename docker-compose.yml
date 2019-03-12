@@ -13,7 +13,7 @@ services:
   # Flask Main Application
   app:
     build: .
-    image: georchestra/foncier-app
+    image: georchestra/foncier-app:18.12
     ports:
       # debug:
       - "5000:5000"
@@ -67,7 +67,7 @@ services:
 
   # sample geOrchestra LDAP
   ldap:
-    image: georchestra/ldap
+    image: georchestra/ldap:18.12
     environment:
       - SLAPD_ORGANISATION=georchestra
       - SLAPD_DOMAIN=georchestra.org
