@@ -13,7 +13,7 @@ services:
   # Flask Main Application
   app:
     build: .
-    image: georchestra/foncier-app:18.12
+    image: georchestra/foncier-app:latest
     ports:
       # debug:
       - "5000:5000"
@@ -92,7 +92,7 @@ services:
     image: camptocamp/postgres:9.6
     volumes:
       - foncier_pg_data:/var/lib/postgresql/data
-      - ./db/sql:/docker-entrypoint-initdb.d/
+      - ./resources/db/sql:/docker-entrypoint-initdb.d/
     ports:
       - "54322:5432"
     environment:
