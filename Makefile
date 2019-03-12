@@ -1,5 +1,5 @@
 docker-build-latest: docker-pull-deps
-	docker build -t georchestra/foncier-app:latest . ; \
+	docker build -t georchestra/foncier-app:latest foncier-docker ; \
 	docker build -t georchestra/foncier-worker:latest celery ; \
 
 docker-build-push: docker-build-latest
