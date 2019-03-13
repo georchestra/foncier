@@ -1,7 +1,7 @@
 BTAG=18.12
 
 docker-build-latest: docker-pull-deps
-	docker build -t georchestra/foncier-app:${BTAG} foncier-docker ; \
+	docker build -t georchestra/foncier-app:${BTAG} -f foncier-docker/Dockerfile . ; \
 	docker build -t georchestra/foncier-worker:${BTAG} celery ; \
 
 docker-build-push: docker-build-latest
