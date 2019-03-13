@@ -1,15 +1,18 @@
+BTAG=18.12
+
 docker-build-latest: docker-pull-deps
-	docker build -t georchestra/foncier-app:18.12 foncier-docker ; \
-	docker build -t georchestra/foncier-worker:18.12 celery ; \
+	docker build -t georchestra/foncier-app:${BTAG} foncier-docker ; \
+	docker build -t georchestra/foncier-worker:${BTAG} celery ; \
 
 docker-build-push: docker-build-latest
-	TAG=18.12-$$(date +%Y%m%d%H%M%S) ;\
-	docker tag georchestra/foncier-app:18.12 georchestra/foncier-app:$$TAG ; \
-	docker tag georchestra/foncier-worker:18.12 georchestra/foncier-worker:$$TAG ; \
+	TAG=${BTAG}-$$(date +%Y%m%d%H%M%S) ;\
+	echo $$TAG ;\
+	docker tag georchestra/foncier-app:${BTAG} georchestra/foncier-app:$$TAG ; \
+	docker tag georchestra/foncier-worker:${BTAG} georchestra/foncier-worker:$$TAG ; \
 	docker push georchestra/foncier-app:$$TAG ; \
-	docker push georchestra/foncier-app:18.12 ; \
+	docker push georchestra/foncier-app:${BTAG} ; \
 	docker push georchestra/foncier-worker:$$TAG ; \
-	docker push georchestra/foncier-worker:18.12 ; \
+	docker push georchestra/foncier-worker:${BTAG} ; \
 
 docker-pull-deps:
 	docker pull python:3.5 ; \
