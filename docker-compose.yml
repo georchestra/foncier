@@ -13,7 +13,7 @@ services:
   # Flask Main Application
   app:
     build: .
-    image: georchestra/foncier-app
+    image: georchestra/foncier-app:18.06
     ports:
       # debug:
       - "5000:5000"
@@ -40,7 +40,7 @@ services:
   # Worker
   worker:
     build: celery
-    image: georchestra/foncier-worker
+    image: georchestra/foncier-worker:18.06
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -67,7 +67,7 @@ services:
 
   # sample geOrchestra LDAP
   ldap:
-    image: georchestra/ldap
+    image: georchestra/ldap:18.06
     environment:
       - SLAPD_ORGANISATION=georchestra
       - SLAPD_DOMAIN=georchestra.org

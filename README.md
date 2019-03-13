@@ -36,6 +36,18 @@ Si de plus, la requête est munie d'un header `sec-org` égalant le `cn` d'un or
 
 Dans le cas contraire, la réponse de l'application est une page indiquant les modalités d'accès aux fichiers fonciers.
 
+## Checking the app
+
+In georchestra LDAP default config, organization psc has its description field listing some commune codes (62053,62267,62565,62685,62696,62862,62562). If you run this compose file, the DB will be loaded with some cadaster sample data covering a wider area. They are published in the foncier_2014 DB schema.
+This way, you can check the app is working properly by using the headers as suggested above and requesting the data for year 2014. It should extract cadaster information on the communes listed in the description field.
+
+- Open http://localhost:8080/foncier/
+- configure the headers as suggested in main README,
+- Try some extraction on year 2014
+- check your mail at http://localhost:8081/webmail/
+- you should have received an email with the download link. It should allow you to download an archive containing your  extracted data
+
+
 ## License
 
 Licensed under the EUPL V.1.1.
