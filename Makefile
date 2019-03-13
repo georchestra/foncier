@@ -1,15 +1,15 @@
 docker-build-latest: docker-pull-deps
-	docker build -t georchestra/foncier-app:latest . ; \
-	docker build -t georchestra/foncier-worker:latest celery ; \
+	docker build -t georchestra/foncier-app:18.12 foncier-docker ; \
+	docker build -t georchestra/foncier-worker:18.12 celery ; \
 
 docker-build-push: docker-build-latest
-	TAG=$$(date +%Y%m%d%H%M%S) ;\
-	docker tag georchestra/foncier-app:latest georchestra/foncier-app:$$TAG ; \
-	docker tag georchestra/foncier-worker:latest georchestra/foncier-worker:$$TAG ; \
+	TAG=18.12-$$(date +%Y%m%d%H%M%S) ;\
+	docker tag georchestra/foncier-app:18.12 georchestra/foncier-app:$$TAG ; \
+	docker tag georchestra/foncier-worker:18.12 georchestra/foncier-worker:$$TAG ; \
 	docker push georchestra/foncier-app:$$TAG ; \
-	docker push georchestra/foncier-app:latest ; \
+	docker push georchestra/foncier-app:18.12 ; \
 	docker push georchestra/foncier-worker:$$TAG ; \
-	docker push georchestra/foncier-worker:latest ; \
+	docker push georchestra/foncier-worker:18.12 ; \
 
 docker-pull-deps:
 	docker pull python:3.5 ; \

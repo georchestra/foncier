@@ -13,7 +13,7 @@ services:
   # Flask Main Application
   app:
     build: .
-    image: georchestra/foncier-app
+    image: georchestra/foncier-app:18.12
     ports:
       # debug:
       - "5000:5000"
@@ -40,7 +40,7 @@ services:
   # Worker
   worker:
     build: celery
-    image: georchestra/foncier-worker
+    image: georchestra/foncier-worker:18.12
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -67,7 +67,7 @@ services:
 
   # sample geOrchestra LDAP
   ldap:
-    image: georchestra/ldap
+    image: georchestra/ldap:18.12
     environment:
       - SLAPD_ORGANISATION=georchestra
       - SLAPD_DOMAIN=georchestra.org
@@ -89,9 +89,10 @@ services:
 
   # Database with Foncier (geo)data
   database:
-    image: camptocamp/postgis:9.5
+    image: camptocamp/postgres:9.6
     volumes:
       - foncier_pg_data:/var/lib/postgresql/data
+      - ./resources/db/sql:/docker-entrypoint-initdb.d/
     ports:
       - "54322:5432"
     environment:
