@@ -1,4 +1,4 @@
-BTAG=18.12
+BTAG=19.04
 
 docker-build-latest: docker-pull-deps
 	docker build -t georchestra/foncier-app:${BTAG} -f foncier-docker/Dockerfile . ; \
